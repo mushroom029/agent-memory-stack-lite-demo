@@ -1,12 +1,12 @@
 {
   "package": "agent-memory-stack-lite-demo",
   "channel": "stable",
-  "version": "v0.1.7",
+  "version": "v0.1.8",
   "publishedAt": "2026-07-09",
   "manifestUrl": "https://159.75.127.201/agent-memory-stack/lite-demo/latest.json",
-  "zipUrl": "https://159.75.127.201/agent-memory-stack/lite-demo/agent-memory-stack-lite-demo-v0.1.7.zip",
-  "sha256": "94690A3C7FF6808000605A640210C3275420397AA1D00F45E2EAECBEBD788B0C",
-  "sizeBytes": 73193,
+  "zipUrl": "https://159.75.127.201/agent-memory-stack/lite-demo/agent-memory-stack-lite-demo-v0.1.8.zip",
+  "sha256": "5F4847E555BEC4F472FD32CD29C7B5EADF5E2A71BA74FE8CD3F5307F3049BB5A",
+  "sizeBytes": 73708,
   "activation": "启用外挂记忆",
   "explicitActivation": "本会话启用外挂记忆",
   "legacyActivation": "启动lite demo",
@@ -20,7 +20,9 @@
   "notes": [
     "Memory-only Lite Demo package.",
     "Installs agent-memory-stack-lite-demo and context-memory-index.",
+    "v0.1.8 adds ExecutionPolicy compatibility and Skill Trace.",
     "Activation-only phrases enable memory but do not auto-run old tasks or start services.",
+    "When another execution protocol is active, Lite Demo records memory only instead of adding duplicate planning/testing flow.",
     "Updater verifies SHA256 before install."
   ]
 }
