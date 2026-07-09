@@ -14,15 +14,32 @@
 
 ## 当前版本
 
-- 版本：`v0.1.7`
+- 推荐版本：`v0.1.8`
+- 保留旧版：`v0.1.7`
 - 主启动词：`启用外挂记忆`
 - 明确启动词：`本会话启用外挂记忆`
 - 兼容旧口令：`启动lite demo`
 - 升级口令：`升级lite demo`
 
+## v0.1.8 升级内容
+
+`v0.1.8` 增加了执行协议兼容和 Skill Trace：
+
+- 如果你已经有工程协议、调试协议、测试协议或其他执行型 skill，Lite Demo 只做记忆层，不再额外加一套计划、测试或验证流程。
+- 如果项目里没有明确执行协议，Lite Demo 才启用最低限度的复杂任务记忆锚点，记录目标、失败路径、稳定模块、下一步和必要验证。
+- Skill Trace 只记录本任务实际使用且影响执行策略的 skill，不记录全部 available skills，避免记忆库变成流水账。
+
+简单说：深度用户不被打扰，普通用户仍然有防失忆锚点。
+
 ## 下载
 
-本仓库内置当前 zip：
+推荐新版：
+
+```text
+agent-memory-stack-lite-demo-v0.1.8.zip
+```
+
+保留旧版：
 
 ```text
 agent-memory-stack-lite-demo-v0.1.7.zip
@@ -43,7 +60,8 @@ https://159.75.127.201/agent-memory-stack/lite-demo/latest.json
 SHA256：
 
 ```text
-94690A3C7FF6808000605A640210C3275420397AA1D00F45E2EAECBEBD788B0C
+v0.1.8  5F4847E555BEC4F472FD32CD29C7B5EADF5E2A71BA74FE8CD3F5307F3049BB5A
+v0.1.7  94690A3C7FF6808000605A640210C3275420397AA1D00F45E2EAECBEBD788B0C
 ```
 
 ## 怎么安装
