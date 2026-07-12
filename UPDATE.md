@@ -21,6 +21,8 @@ https://github.com/mushroom029/agent-memory-stack-lite-demo/tree/main/skills/age
 https://github.com/mushroom029/agent-memory-stack-lite-demo/tree/main/skills/context-memory-index
 ```
 
+这两个 GitHub 路径只负责首次安装。安装后与 zip 安装使用同一套本地 skill 结构；后续升级不要重新猜 GitHub 路径，直接说 `升级lite demo`，Codex 会使用已安装的 updater 回到官方服务器更新源。
+
 Codex 应使用已安装 skill 内的脚本：
 
 ```powershell

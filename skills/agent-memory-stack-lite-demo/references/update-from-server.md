@@ -14,6 +14,17 @@ Chinese shortcut:
 - Channel: stable
 - Author: 蘑菇
 
+## GitHub Direct Install Compatibility
+
+If Lite Demo was first installed from GitHub with these exact skill paths, use the same update flow:
+
+```text
+https://github.com/mushroom029/agent-memory-stack-lite-demo/tree/main/skills/agent-memory-stack-lite-demo
+https://github.com/mushroom029/agent-memory-stack-lite-demo/tree/main/skills/context-memory-index
+```
+
+GitHub direct install is only an initial install source. After installation, it has the same local layout as zip install and includes this updater script. When the user says `升级lite demo`, update from the official server manifest below instead of guessing the repo root or reinstalling from an arbitrary GitHub path.
+
 ## Command
 
 Run the installed updater script from the user's Codex home:

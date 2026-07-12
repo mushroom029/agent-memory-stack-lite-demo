@@ -90,6 +90,14 @@ https://github.com/mushroom029/agent-memory-stack-lite-demo/tree/main/skills/con
 
 如果安装器说仓库是 private 或无法访问，通常不是本仓库私有，而是它拿到了仓库根目录或错误路径。请改用上面的 `skills/...` 精确路径。
 
+GitHub 直装只是首次安装入口。安装完成后，它和 zip 安装会落到同一套本地 skill 结构；以后升级仍然直接对 Codex 说：
+
+```text
+升级lite demo
+```
+
+Codex 会使用已安装的 `agent-memory-stack-lite-demo` 内置升级脚本，回到蘑菇的官方服务器更新源下载、校验并覆盖安装最新版。
+
 ### 方法二：下载 zip 安装
 
 把 zip 下载到本地，然后在 Codex 里对它说：
@@ -104,7 +112,7 @@ https://github.com/mushroom029/agent-memory-stack-lite-demo/tree/main/skills/con
 启用外挂记忆
 ```
 
-已经安装 Lite Demo 的用户可以直接说：
+已经安装 Lite Demo 的用户，无论最初是 zip 安装还是 GitHub 直装，都可以直接说：
 
 ```text
 升级lite demo
