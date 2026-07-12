@@ -14,6 +14,13 @@ https://159.75.127.201/agent-memory-stack/lite-demo/latest.json
 升级lite demo
 ```
 
+如果是首次从 GitHub 直装，请不要只给仓库根目录；请安装这两个路径：
+
+```text
+https://github.com/mushroom029/agent-memory-stack-lite-demo/tree/main/skills/agent-memory-stack-lite-demo
+https://github.com/mushroom029/agent-memory-stack-lite-demo/tree/main/skills/context-memory-index
+```
+
 Codex 应使用已安装 skill 内的脚本：
 
 ```powershell

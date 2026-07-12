@@ -1,0 +1,4 @@
+interface:
+  display_name: "上下文索引记忆"
+  short_description: "把长会话压成可恢复索引，也可作为外挂记忆降级入口"
+  default_prompt: "Use $context-memory-index to turn this long-running discussion into a compact current-context file, active-task anchor, activation packet, optional session log, and indexed capsules for durable judgments and regression-risk signals."

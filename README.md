@@ -71,6 +71,27 @@ v0.1.7  94690A3C7FF6808000605A640210C3275420397AA1D00F45E2EAECBEBD788B0C
 
 ## 怎么安装
 
+### 方法一：Codex GitHub 直装
+
+如果你想让 Codex 直接从 GitHub 安装，不要只给仓库根目录。请让 Codex 安装下面两个 skill 路径：
+
+```text
+https://github.com/mushroom029/agent-memory-stack-lite-demo/tree/main/skills/agent-memory-stack-lite-demo
+https://github.com/mushroom029/agent-memory-stack-lite-demo/tree/main/skills/context-memory-index
+```
+
+可以直接对 Codex 说：
+
+```text
+请从 GitHub 安装这两个 Codex skills：
+https://github.com/mushroom029/agent-memory-stack-lite-demo/tree/main/skills/agent-memory-stack-lite-demo
+https://github.com/mushroom029/agent-memory-stack-lite-demo/tree/main/skills/context-memory-index
+```
+
+如果安装器说仓库是 private 或无法访问，通常不是本仓库私有，而是它拿到了仓库根目录或错误路径。请改用上面的 `skills/...` 精确路径。
+
+### 方法二：下载 zip 安装
+
 把 zip 下载到本地，然后在 Codex 里对它说：
 
 ```text
