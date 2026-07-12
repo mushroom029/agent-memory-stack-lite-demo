@@ -1,12 +1,12 @@
 {
   "package": "agent-memory-stack-lite-demo",
   "channel": "stable",
-  "version": "v0.1.9",
-  "publishedAt": "2026-07-10",
+  "version": "v0.2.0f",
+  "publishedAt": "2026-07-12",
   "manifestUrl": "https://159.75.127.201/agent-memory-stack/lite-demo/latest.json",
-  "zipUrl": "https://159.75.127.201/agent-memory-stack/lite-demo/agent-memory-stack-lite-demo-v0.1.9.zip",
-  "sha256": "C461C073439646EB15FBD10136BFC038379C0C43D490C37FA54975D860B579B6",
-  "sizeBytes": 76158,
+  "zipUrl": "https://159.75.127.201/agent-memory-stack/lite-demo/agent-memory-stack-lite-demo-v0.2.0f.zip",
+  "sha256": "0D89663F4D07579C274D89C586DA70A4F8A7FCE5969E4EDBDE7A2F12368BDE0A",
+  "sizeBytes": 95805,
   "activation": "启用外挂记忆",
   "explicitActivation": "本会话启用外挂记忆",
   "legacyActivation": "启动lite demo",
@@ -20,10 +20,10 @@
   "notes": [
     "Memory-only Lite Demo package.",
     "Installs agent-memory-stack-lite-demo and context-memory-index.",
-    "v0.1.9 fixes silent non-upgrades and selects the highest semantic-version package instead of the newest file timestamp.",
-    "Bootstrap refreshes managed AGENTS guidance and verifies the installed version after replacement.",
-    "Live ExecutionPolicy has one authoritative active-task owner; execution protocol records are agent-authored evidence, not runtime telemetry.",
-    "v0.1.7 remains available as the retained stable fallback; v0.1.8 has been retired from public distribution.",
+    "Compared with v0.1.9, v0.2.0f keeps the silent-upgrade and semantic-version bootstrap fixes, then adds memory hygiene, compact Run Audit, UTF-8 discipline, activation fallback, one-time activation suggestion, and adaptive retreat.",
+    "If another execution protocol or model-native workflow already owns the task flow, Lite Demo records memory only and does not add extra planning, testing, verification, or audit ritual.",
+    "Without an explicit execution protocol, lite-anchor starts light and becomes fuller only after drift, repeated failure, forgotten correction, compression recovery failure, stable-module mistake, or high pressure.",
+    "v0.1.7 remains available as the retained stable fallback; v0.1.8 remains retired from public distribution.",
     "Updater verifies SHA256 before install."
   ]
 }
