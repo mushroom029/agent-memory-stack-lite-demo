@@ -1,12 +1,12 @@
 {
   "package": "agent-memory-stack-lite-demo",
   "channel": "stable",
-  "version": "v0.2.0f",
-  "publishedAt": "2026-07-12",
+  "version": "v0.2.2",
+  "publishedAt": "2026-07-13",
   "manifestUrl": "https://159.75.127.201/agent-memory-stack/lite-demo/latest.json",
-  "zipUrl": "https://159.75.127.201/agent-memory-stack/lite-demo/agent-memory-stack-lite-demo-v0.2.0f.zip",
-  "sha256": "0D89663F4D07579C274D89C586DA70A4F8A7FCE5969E4EDBDE7A2F12368BDE0A",
-  "sizeBytes": 95805,
+  "zipUrl": "https://159.75.127.201/agent-memory-stack/lite-demo/agent-memory-stack-lite-demo-v0.2.2.zip",
+  "sha256": "A7B736FBD593625A0CBA9A5B6F7FACC46DD1FCAEB61F8B3A47F99A6E60CF090F",
+  "sizeBytes": 96087,
   "activation": "启用外挂记忆",
   "explicitActivation": "本会话启用外挂记忆",
   "legacyActivation": "启动lite demo",
@@ -19,11 +19,12 @@
   },
   "notes": [
     "Memory-only Lite Demo package.",
-    "Installs agent-memory-stack-lite-demo and context-memory-index.",
-    "Compared with v0.1.9, v0.2.0f keeps the silent-upgrade and semantic-version bootstrap fixes, then adds memory hygiene, compact Run Audit, UTF-8 discipline, activation fallback, one-time activation suggestion, and adaptive retreat.",
-    "If another execution protocol or model-native workflow already owns the task flow, Lite Demo records memory only and does not add extra planning, testing, verification, or audit ritual.",
-    "Without an explicit execution protocol, lite-anchor starts light and becomes fuller only after drift, repeated failure, forgotten correction, compression recovery failure, stable-module mistake, or high pressure.",
+    "Installs one public skill: agent-memory-stack-lite-demo. The context-memory workflow is internal.",
+    "Compared with v0.2.0f, v0.2.2 repairs the one-skill architecture, safely archives only exact known legacy copies, and preserves changed or independent skills.",
+    "The updater now refuses silent downgrade or same-version reinstall, propagates child failures, uses transactional replacement, and rereads the installed version before reporting success.",
+    "Lite Demo keeps memory active while automatically retreating its own fallback engineering flow when an existing task protocol is detected.",
+    "A compact strong-relevance index routes only selected memories; necessary selected-memory context is preserved.",
     "v0.1.7 remains available as the retained stable fallback; v0.1.8 remains retired from public distribution.",
-    "Updater verifies SHA256 before install."
+    "Updater verifies SHA256 before install. Three-party release review found no P0/P1 blocker."
   ]
 }

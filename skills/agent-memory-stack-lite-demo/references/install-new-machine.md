@@ -13,7 +13,7 @@ The folder <folder-path> contains an Agent Memory Stack Lite Demo skill zip. Ins
 1. Find the newest matching zip in the folder.
 2. Extract it to `.agent-memory-stack-lite-demo-bootstrap`.
 3. Run the package checker.
-4. Install bundled skills with global AGENTS guidance.
+4. Install the bundled Lite Demo skill with global AGENTS guidance.
 5. If a project path is provided, install project AGENTS guidance and starter `docs/codex` memory.
 6. Print the next demo prompt: `启用外挂记忆`, and mention `启动外挂记忆` is also accepted.
 
@@ -40,8 +40,8 @@ pwsh -NoLogo -NoProfile -ExecutionPolicy Bypass -File .\scripts\install.ps1 -Pro
 
 ## Success criteria
 
-- `agent-memory-stack-lite-demo` is installed.
-- `context-memory-index` is installed.
+- `agent-memory-stack-lite-demo` is installed as the only public skill.
+- The context-memory workflow exists only as internal references/scripts inside that skill.
 - Global AGENTS contains the marker block.
 - After install, the primary activation phrase `启用外挂记忆` is enough to enable the demo.
 - The natural start phrase `启动外挂记忆`, explicit safe phrase `本会话启用外挂记忆`, and legacy phrase `启动lite demo` are also accepted.

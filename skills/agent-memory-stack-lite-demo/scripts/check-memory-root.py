@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Lightweight validator for a context-memory-index project root."""
+"""Lightweight validator for a Lite Demo context-memory project root."""
 
 from __future__ import annotations
 
@@ -11,6 +11,14 @@ from pathlib import Path
 
 FIELD_RE = re.compile(r"^\s*-\s*([^:\n]+):\s*(.*)$", re.MULTILINE)
 CAPSULE_ID_RE = re.compile(r"\b(C[0-9][0-9A-Za-z_-]*)\b")
+SECRET_PATTERNS = (
+    re.compile(r"(?i)\b(?:api[_ -]?key|secret|password|token)\s*[:=]\s*[^\s`]{8,}"),
+    re.compile(r"(?i)\bbearer\s+[a-z0-9._-]{12,}"),
+    re.compile(r"-----BEGIN [A-Z ]*PRIVATE KEY-----"),
+)
+CURRENT_CONTEXT_SOFT_CHARS = 8_000
+ROUTING_INDEX_SOFT_CHARS = 12_000
+ROUTING_LINE_SOFT_CHARS = 800
 
 
 def read_text(path: Path) -> str:
@@ -46,6 +54,10 @@ def index_capsule_ids(index_text: str) -> set[str]:
     return ids
 
 
+def has_secret_like_text(text: str) -> bool:
+    return any(pattern.search(text) for pattern in SECRET_PATTERNS)
+
+
 def validate(root: Path) -> tuple[list[str], list[str]]:
     errors: list[str] = []
     warnings: list[str] = []
@@ -68,6 +80,17 @@ def validate(root: Path) -> tuple[list[str], list[str]]:
     current_text = read_text(current) if current.exists() else ""
     index_text = read_text(index) if index.exists() else ""
     active_text = read_text(active_task) if active_task.exists() else ""
+
+    if len(current_text) > CURRENT_CONTEXT_SOFT_CHARS:
+        warnings.append(
+            "current-context.md is large for an always-read live anchor; move durable detail to capsules"
+        )
+    if len(index_text) > ROUTING_INDEX_SOFT_CHARS:
+        warnings.append(
+            "index.md is large for a routing layer; keep keyword/alias/topic -> pointer + one short reason, without limiting selected capsules"
+        )
+    if any(len(line) > ROUTING_LINE_SOFT_CHARS for line in index_text.splitlines()):
+        warnings.append("index.md has a long routing entry that may contain capsule detail")
 
     if active_task.exists() and is_active_task(active_text):
         if not has_field_value(active_text, ("next exact step",)):
@@ -115,6 +138,15 @@ def validate(root: Path) -> tuple[list[str], list[str]]:
 
         if "module aliases" not in index_text.lower():
             warnings.append("index.md has no Module aliases section")
+
+    memory_files = [current, index, active_task, session_log]
+    if capsules_dir.exists():
+        memory_files.extend(sorted(capsules_dir.glob("*.md")))
+    for memory_file in memory_files:
+        if memory_file.exists() and has_secret_like_text(read_text(memory_file)):
+            warnings.append(
+                f"{memory_file.relative_to(root)} contains secret-like text; review and redact before sharing or persisting"
+            )
 
     return errors, warnings
 

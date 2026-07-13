@@ -8,13 +8,20 @@ param(
     [switch]$WriteProjectAgents,
     [switch]$PreauthorizeMemoryLanding,
     [switch]$CheckOnly,
-    [switch]$KeepDownload
+    [switch]$KeepDownload,
+    [switch]$AllowDowngrade,
+    [switch]$ForceReinstall
 )
 
 $ErrorActionPreference = "Stop"
 $ProgressPreference = "SilentlyContinue"
 $OfficialPackage = "agent-memory-stack-lite-demo"
 $OfficialChannel = "stable"
+$CommonHelpersPath = Join-Path $PSScriptRoot "lite-demo-common.ps1"
+if (-not (Test-Path -LiteralPath $CommonHelpersPath)) {
+    throw "Missing Lite Demo common helpers: $CommonHelpersPath"
+}
+. $CommonHelpersPath
 
 function Resolve-CodexHome {
     param([string]$Value)
@@ -79,6 +86,18 @@ $installedVersion = if (Test-Path -LiteralPath $installedVersionPath) {
     "unknown"
 }
 
+$decision = "install"
+if ($installedVersion -ne "unknown") {
+    $comparison = Compare-LiteDemoVersion -Left ([string]$manifest.version) -Right $installedVersion
+    if ($comparison -gt 0) {
+        $decision = "upgrade"
+    } elseif ($comparison -eq 0) {
+        $decision = if ($ForceReinstall) { "reinstall" } else { "same-version" }
+    } else {
+        $decision = if ($AllowDowngrade) { "downgrade" } else { "newer-installed" }
+    }
+}
+
 if ($CheckOnly) {
     [pscustomobject]@{
         Package = $manifest.package
@@ -88,11 +107,30 @@ if ($CheckOnly) {
         ManifestUrl = $ManifestUrl
         ZipUrl = $manifest.zipUrl
         SHA256 = $manifest.sha256
+        Decision = $decision
         NextPrompt = "启用外挂记忆"
         NaturalPrompt = "启动外挂记忆"
         LegacyPrompt = "启动lite demo"
     } | ConvertTo-Json -Depth 5
-    exit 0
+    return
+}
+
+if ($decision -in @("same-version", "newer-installed")) {
+    [pscustomobject]@{
+        Package = $manifest.package
+        Channel = $manifest.channel
+        Status = "no-change"
+        Decision = $decision
+        InstalledVersion = $installedVersion
+        LatestVersion = $manifest.version
+        Message = if ($decision -eq "same-version") {
+            "当前已经是这个版本，不需要重复安装。"
+        } else {
+            "本机版本比公开版本更新，已保留本机版本；没有执行降级。"
+        }
+        NextPrompt = "启用外挂记忆"
+    } | ConvertTo-Json -Depth 5
+    return
 }
 
 $tempRoot = Join-Path ([System.IO.Path]::GetTempPath()) ("agent-memory-stack-lite-demo-update-" + [System.Guid]::NewGuid().ToString("N"))
@@ -122,7 +160,14 @@ try {
     $checkScript = Join-Path $packageRoot.FullName "scripts/check-package.ps1"
     $installScript = Join-Path $packageRoot.FullName "scripts/install.ps1"
 
-    & pwsh -NoLogo -NoProfile -ExecutionPolicy Bypass -File $checkScript
+    Invoke-LiteDemoCheckedPwsh -Label "Package check" -Arguments @(
+        "-NoLogo",
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        $checkScript
+    )
 
     $installArgs = @(
         "-NoLogo",
@@ -150,14 +195,28 @@ try {
     if ($PreauthorizeMemoryLanding) {
         $installArgs += "-PreauthorizeMemoryLanding"
     }
+    if ($decision -eq "downgrade") {
+        $installArgs += "-AllowDowngrade"
+    }
 
-    & pwsh @installArgs
+    Invoke-LiteDemoCheckedPwsh -Label "Lite Demo install" -Arguments $installArgs
+
+    $actualInstalledVersion = if (Test-Path -LiteralPath $installedVersionPath) {
+        (Get-Content -LiteralPath $installedVersionPath -Raw -Encoding UTF8).Trim()
+    } else {
+        "unknown"
+    }
+    if ($actualInstalledVersion -ne [string]$manifest.version) {
+        throw "Post-install version mismatch. Expected $($manifest.version) but found $actualInstalledVersion"
+    }
 
     [pscustomobject]@{
         Package = $manifest.package
         Channel = $manifest.channel
+        Status = "success"
+        Decision = $decision
         PreviousInstalledVersion = $installedVersion
-        InstalledVersion = $manifest.version
+        InstalledVersion = $actualInstalledVersion
         CodexHome = $CodexHome
         ManifestUrl = $ManifestUrl
         ZipUrl = $manifest.zipUrl

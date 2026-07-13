@@ -1,9 +1,7 @@
----
-name: context-memory-index
-description: Turn long-running, repeatedly compacted, or versioned work into a project-local context index with current-context, active-task anchors, project phase, user pressure signals, activation packets, optional session logs, and capsules so Codex can recover prior judgments and avoid route drift or rejected-solution resurrection after compaction, model switches, or session reuse. Use when a discussion is getting long, the same project has many versions or test rounds, the user starts testing or reporting regressions, strong user pressure should shape project memory, the user asks to preserve context across sessions, a prior task drifted after compaction, or the user says "启用外挂记忆", "启动外挂记忆", or "本会话启用外挂记忆" while the top-level Lite Demo skill is unavailable.
----
+# Lite Demo Internal Context Memory Workflow
 
-# Context Memory Index
+This is an internal reference for `$agent-memory-stack-lite-demo`, not a
+standalone skill. Do not ask the user to install or activate it separately.
 
 Use this skill to keep the live thread small while preserving recoverable work history on disk.
 
@@ -21,13 +19,9 @@ Start lightweight. Create only what the current project needs:
 4. `active-task.md` only for multi-phase, risky, approved, or compaction-sensitive work.
 5. `session-log.md` only for noisy investigations or long test/fix loops.
 
-## Lite Demo Fallback Activation
-
-If the user says `启用外挂记忆`, `启动外挂记忆`, or `本会话启用外挂记忆` and the top-level `agent-memory-stack-lite-demo` skill is unavailable, say that only the memory companion is available and continue with this skill's project-memory workflow. Do not discuss, imitate, or rebuild Lite Demo architecture; do not start services, run tests, or resume old tasks from an activation-only message.
-
 ## Default layout
 
-See [references/layout.md](references/layout.md), [references/templates.md](references/templates.md), [references/index-template.md](references/index-template.md), [references/recovery-patterns.md](references/recovery-patterns.md), [references/project-stages-and-risk.md](references/project-stages-and-risk.md), and [references/activation-packet-template.md](references/activation-packet-template.md).
+See [context-memory/layout.md](context-memory/layout.md), [context-memory/templates.md](context-memory/templates.md), [context-memory/index-template.md](context-memory/index-template.md), [context-memory/recovery-patterns.md](context-memory/recovery-patterns.md), [context-memory/project-stages-and-risk.md](context-memory/project-stages-and-risk.md), and [context-memory/activation-packet-template.md](context-memory/activation-packet-template.md).
 
 The context root is selected by path discovery. Reuse an existing project root
 such as `docs/context-memory/`, `docs/codex/`, or `docs/context/`. If none
@@ -85,8 +79,8 @@ package before treating the upgrade as reusable on another computer.
 ## Workflow
 
 1. Read `current-context.md`.
-2. Read `index.md`.
-3. Use the full `index.md` keyword/tag map to decide which memories are relevant; do not skip indexed pressure signals, stable behavior, rejected approaches, or regression guards for touched modules.
+2. Read the compact routing layer in `index.md`.
+3. Match the current task against strong-relevance keywords, aliases, topics, and module names. Open only the pointed capsules, pressure signals, stable behavior, rejected approaches, and regression guards selected by that match. Do not load unrelated memory just because it exists.
 4. Read `active-task.md` if present and not complete.
 5. Read `session-log.md` if the current work is active, noisy, or has many tool calls.
 6. Open only the capsules tied to the active version, module, hypothesis, pressure signal, rejected approach, or regression guard.
@@ -98,7 +92,7 @@ package before treating the upgrade as reusable on another computer.
    investigation branch until the anchor exists.
 9. After each logical work unit in long/risky work, refresh `active-task.md` with the current step and next exact step before switching focus, running a validation gate, asking for review, or entering interruption risk.
 10. Before a deliberate compaction, restart, or major phase shift, update `current-context.md`, `active-task.md` if present, and the session log.
-11. Keep `current-context.md` short: phase, baseline, active hypothesis, known failures, pressure signals, rejected approaches, evidence links, next step, and pointers.
+11. Keep `current-context.md` short: phase, goal, active constraint, evidence pointers, active-task pointer, and next step. Move durable detail into capsules.
 12. Record time-ordered discovery, decisions, user pressure signals, errors, tests, artifact/model-call reuse decisions, encoding checks, and compact run audit cards in `session-log.md`; promote stable conclusions into capsules.
 13. Put durable version judgments, rejected approaches, pressure-weighted constraints, and stable behavior protections in capsules; do not keep them only in chat.
 14. Before promoting one request, pressure phrase, short acknowledgement, local
@@ -128,7 +122,7 @@ If the newest user instruction conflicts with the anchor, update the anchor befo
 
 ## Project Phase And Risk
 
-Use [references/project-stages-and-risk.md](references/project-stages-and-risk.md) when the user starts testing, reports regressions, expresses strong frustration, or asks for bug fixes on a partly working project.
+Use [context-memory/project-stages-and-risk.md](context-memory/project-stages-and-risk.md) when the user starts testing, reports regressions, expresses strong frustration, or asks for bug fixes on a partly working project.
 
 Core rules:
 
@@ -143,7 +137,7 @@ Core rules:
 
 ## Activation Packet
 
-Before acting after resume, compaction, model switch, or a risky new request, synthesize a short activation packet from the memory files. Use [references/activation-packet-template.md](references/activation-packet-template.md).
+Before acting after resume, compaction, model switch, or a risky new request, synthesize a short activation packet from the memory files. Use [context-memory/activation-packet-template.md](context-memory/activation-packet-template.md).
 
 If no memory is selected for the current task, say why. If the task touches a module named in `index.md`, first check that module's pressure signals, stable behavior, rejected approaches, and guard entries.
 
@@ -196,7 +190,7 @@ a completed anchor's `Next exact step` or `Resume instruction`.
 
 ## Compaction Interruption Gate
 
-Use [references/recovery-patterns.md](references/recovery-patterns.md) whenever compaction, restart, model switch, or a tool/session handoff happens during an unfinished task.
+Use [context-memory/recovery-patterns.md](context-memory/recovery-patterns.md) whenever compaction, restart, model switch, or a tool/session handoff happens during an unfinished task.
 
 Minimum gate:
 
@@ -219,7 +213,7 @@ after each module group.
 ## Decision rules
 
 - Use `current-context.md` for the active thread state.
-- Use `index.md` for navigation across versions and topics.
+- Use `index.md` only as a compact router across versions and topics: keyword/alias/topic -> pointer + one short routing reason.
 - Use `session-log.md` for chronological actions, errors, and test results during active work.
 - Use one capsule per version or one durable topic shift.
 - Split capsules when evidence or hypotheses diverge.
@@ -230,6 +224,17 @@ after each module group.
 - Treat pressure, short approval, and one-off instructions as memory evidence, not automatic hard law. If the note becomes durable, mark it task-local, revisable, or an explicit hard boundary.
 - Keep negative evidence visible: rejected approaches, old-solution resurrection risks, and regression guards must survive compaction.
 - For a project memory health check, run `scripts/check-memory-root.py <memory-root>`.
+
+## Index Purity
+
+The initial context should pay only for the routing layer and active state. The
+context cost of memories selected for the current task is necessary; do not cap
+or discard relevant capsules merely because they are detailed.
+
+Do not let `index.md` become a second memory store. Move explanations, evidence,
+decision history, long guards, and narrative status into capsules. Treat size
+warnings from `check-memory-root.py` as silent maintenance signals for Codex,
+not as user-facing approval gates or hard limits on selected memory.
 
 ## Reboot check
 

@@ -1,8 +1,13 @@
 # Execution Policy Compatibility Gate
 
-Use this before complex execution, task-anchor creation, or recovery from compression.
+Use this once before the first complex execution step of a new task, before
+activating Lite Demo's fallback engineering protocol. Reuse the task-scoped
+decision until a recheck trigger appears.
 
-Lite Demo does not decide how to do engineering work when another explicit protocol already does. It records how the chosen protocol is going.
+Lite Demo has two separate layers: external memory and a lightweight fallback
+engineering protocol. The memory layer stays active. When another protocol
+already owns execution, keep the fallback engineering protocol off and record
+how the chosen protocol is going.
 
 ## Single Source Of Truth
 
@@ -24,7 +29,8 @@ Fields left by v0.1.8 in current-context, index, or session-log are migration hi
 
 ## Decision
 
-Inspect only these current-task sources:
+Silently inspect only these current-task sources. Do not ask an ordinary user to
+choose a policy or compare protocols:
 
 - the newest user instruction;
 - project-root `AGENTS.md` or equivalent operating rules;
@@ -37,6 +43,7 @@ Lite Demo does not judge model strength or score workflow quality. `model-native
 
 In `external` mode:
 
+- keep Lite Demo memory active but do not activate Lite Demo's fallback engineering protocol;
 - do not add a second execution flow;
 - do not add plan, test, verification, or deployment steps only because Lite Demo is active;
 - record the chosen protocol's goal, route summary, failed paths, validation result, stable-module boundary, pressure signal, and next step.
@@ -58,3 +65,8 @@ Do not sniff every turn. Re-evaluate and replace the task-scoped fields when:
 - explicit sources conflict with the cached policy.
 
 Do not run broad project scans for protocols.
+
+Keep `ExecutionPolicy`, source names, and skill traces inside project memory.
+User-facing replies should say only that Lite Demo will follow the project's
+existing workflow or provide a light fallback; do not expose internal field
+names unless the user explicitly asks.

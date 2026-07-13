@@ -10,9 +10,9 @@ Run:
 pwsh -NoLogo -NoProfile -ExecutionPolicy Bypass -File .\scripts\check-package.ps1
 ```
 
-Validate the two bundled skills with the skill validator.
+Validate the single bundled public skill with the skill validator.
 
-Validate package memory with the context memory root checker.
+Validate package memory with the internal memory root checker.
 
 ## Hard Local Gates
 
@@ -33,8 +33,13 @@ Test these paths:
 - install with `-PreauthorizeMemoryLanding`;
 - repeat install without duplicate AGENTS blocks.
 - reinstall a newer zip over an older installed version and verify skill version plus AGENTS refresh;
+- upgrade a v0.2.0f CodexHome and verify the exact known legacy `context-memory-index` is archived outside `skills/`;
+- place a changed/independent `context-memory-index` beside Lite Demo and verify it is preserved with a non-destructive warning;
 - put multiple versioned zips in one folder with misleading timestamps and verify the highest semantic version is selected;
-- update check from the official manifest with the installed updater.
+- verify updater decisions for newer, same, older, and unknown installed versions;
+- inject a child package-check/install failure and verify nonzero updater exit with no success JSON;
+- verify the updater rereads installed `VERSION.txt` before reporting success;
+- verify transactional replacement stages before swapping and leaves the previous skill available on pre-commit failure.
 
 ## Demo Task Checks
 
@@ -42,7 +47,7 @@ Choose a safe scoped project task and record:
 
 - whether the installed demo activates from the primary phrase `启用外挂记忆`;
 - whether `启动外挂记忆`, `本会话启用外挂记忆`, and legacy `启动lite demo` activate memory without requiring the long setup prompt;
-- whether top-level Lite Demo absence degrades gracefully through `context-memory-index` instead of architecture discussion;
+- whether installation exposes only one public skill and no second memory skill target;
 - whether activation-only input avoids command execution, service startup, tests, code edits, and old-task auto-resume;
 - whether a no-memory project gets at most one plain activation suggestion after 2-3 meaningful rounds or clear complexity signals;
 - whether refusal creates no `docs/codex/`, no AGENTS state, no stored refusal marker, and causes current-session-only skip;
@@ -56,6 +61,7 @@ Choose a safe scoped project task and record:
 - whether `Execution protocol skills` records only execution skills explicitly triggered and applied to the task;
 - whether Lite Demo avoided adding a second execution flow when `ExecutionPolicy: external`;
 - whether Lite Demo stays memory-only when an external protocol or model-native workflow already owns the execution flow;
+- whether the task-scoped protocol sniff happens before Lite Demo's fallback engineering protocol and does not ask the ordinary user to choose a policy;
 - whether `lite-anchor` starts as a light mirror when scope/boundary/evidence/next step are clear, and becomes fuller only after drift, repeated failure, forgotten correction, stable-module mistake, compression recovery failure, or high pressure;
 - whether memory hygiene kept one-off requests, pressure phrases, failures, and short acknowledgements from becoming hard long-term rules;
 - whether a durable rule write used one rare plain-Chinese reversible readback when the user's wording was ambiguous;
@@ -67,7 +73,10 @@ Choose a safe scoped project task and record:
 - whether Chinese memory/log/UI edits used UTF-8-safe writes and passed a lightweight sentinel/mojibake check;
 - whether first memory-root creation asked for confirmation unless install/preauthorization applied;
 - whether a new complex task line used a same-root task branch anchor instead of a second memory database;
-- whether `current-context.md` and `index.md` were used;
+- whether the compact routing index matched strong-relevance terms and opened only related capsules;
+- whether index entries stayed as keyword/alias/topic -> pointer + one short reason instead of copying capsule detail;
+- whether selected task-relevant memory was retained even when detailed, while unrelated capsules and session history stayed unloaded;
+- whether ordinary user replies avoided `ExecutionPolicy`, capsule, anchor, fingerprint, and routing-index terminology;
 - failed path recorded;
 - next exact step recorded;
 - validation result;
@@ -91,7 +100,7 @@ Compare:
 - `启用外挂记忆` activates the memory-only demo without requiring the long setup prompt.
 - `启动外挂记忆` is treated as the same memory activation intent, not service startup or architecture discussion.
 - Activation-only input reads or creates memory, then asks for a task or resume confirmation instead of executing old work.
-- If top-level Lite Demo is unavailable but `context-memory-index` exists, Codex states the fallback plainly and uses the available memory workflow.
+- The package exposes one public skill; context-memory references remain internal implementation details.
 - No-memory complex work can receive one plain Lite Demo suggestion; if refused, 本会话内不再主动询问 and no refusal state is persisted.
 - A later explicit activation phrase overrides the current-session-only skip.
 - Project AGENTS points to `docs/codex/` instead of storing history itself.
@@ -143,7 +152,7 @@ Compare:
 - Codex treats a refusal as permanent and ignores a later explicit `启用外挂记忆` or `启动外挂记忆`.
 - Codex asks the user to paste the long setup prompt after they said `启用外挂记忆`.
 - Codex treats `启动外挂记忆` as a request to start a service, or discusses/imitates Lite Demo architecture instead of enabling memory.
-- Codex has `context-memory-index` available but fails to use it when top-level Lite Demo is unavailable.
+- Codex asks the user to install, enable, or activate `context-memory-index` as a second skill.
 - Codex auto-starts a local API, dev server, Electron helper, test run, or old active task after an activation-only phrase.
 - Codex creates a second competing memory database instead of a same-root task branch.
 - Session notes never become durable capsules.

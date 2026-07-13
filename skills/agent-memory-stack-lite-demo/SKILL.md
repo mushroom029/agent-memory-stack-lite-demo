@@ -20,7 +20,8 @@ Help Codex keep the route of a real task visible:
 
 Do not present the demo as universal problem solving. The value is route retention and recovery.
 
-Lite Demo does not claim execution ownership when the user, project rules,
+Lite Demo keeps its memory layer active but does not activate its lightweight
+fallback engineering protocol when the user, project rules,
 another triggered skill, or a model-native workflow already defines how to
 debug, plan, test, deploy, refactor, or verify. In that case, Lite Demo records
 the active protocol's state and results. Only when no explicit execution
@@ -39,11 +40,24 @@ once in plain Chinese. If the user refuses, do not create memory or persist that
 refusal; just stop suggesting again in the current chat. A later explicit
 activation phrase overrides the temporary skip.
 
-## Required companion
+## Internal memory workflow
 
-Use `$context-memory-index` for the actual memory mechanics.
+This package is one public skill: `$agent-memory-stack-lite-demo`.
 
-The demo skill supplies package-level install, onboarding, and test guidance. The companion skill owns the detailed current-context, index, active-task, capsule, session-log, and recovery workflow.
+The detailed current-context, index, active-task, capsule, session-log, and
+recovery workflow is bundled as internal references under this skill:
+
+- [references/context-memory-workflow.md](references/context-memory-workflow.md)
+- [references/context-memory/layout.md](references/context-memory/layout.md)
+- [references/context-memory/templates.md](references/context-memory/templates.md)
+- [references/context-memory/index-template.md](references/context-memory/index-template.md)
+- [references/context-memory/recovery-patterns.md](references/context-memory/recovery-patterns.md)
+- [references/context-memory/project-stages-and-risk.md](references/context-memory/project-stages-and-risk.md)
+- [references/context-memory/activation-packet-template.md](references/context-memory/activation-packet-template.md)
+
+Do not ask users to install, enable, or understand a separate memory skill.
+Do not expose it as a second skill, GitHub install path, activation target, or
+fallback plan.
 
 ## Activation phrases
 
@@ -57,17 +71,15 @@ Legacy compatibility phrase: `启动lite demo`.
 
 When the user uses any activation phrase, treat it as an activation command for the installed memory-only demo. Read [references/startup-protocol.md](references/startup-protocol.md). Do not ask the user to paste the longer setup prompt. If the message contains only an activation phrase, do not auto-resume old tasks or start services.
 
-If the top-level Lite Demo skill is unavailable but `$context-memory-index` is available, use the companion skill directly for project memory and state that fallback plainly. Do not discuss, imitate, or rebuild Lite Demo architecture.
-
 ## Workflow
 
 1. For fresh-machine install, read [references/install-new-machine.md](references/install-new-machine.md).
 2. For short activation after install, read [references/startup-protocol.md](references/startup-protocol.md).
 3. For a target project, install project guidance with `scripts/install.ps1 -ProjectRoot <path> -WriteProjectAgents`.
 4. Before creating a first memory root or splitting a new task line, apply [references/memory-creation-and-task-branch-gate.md](references/memory-creation-and-task-branch-gate.md).
-5. Before complex or compaction-sensitive execution, apply [references/execution-policy-compatibility.md](references/execution-policy-compatibility.md), then [references/task-anchor-gate.md](references/task-anchor-gate.md).
+5. Before complex or compaction-sensitive execution, silently sniff once with [references/execution-policy-compatibility.md](references/execution-policy-compatibility.md). If another engineering protocol owns execution, keep Lite Demo's fallback off and use [references/task-anchor-gate.md](references/task-anchor-gate.md) only as its memory mirror.
 6. Before converting ambiguous user language into durable project rules, apply [references/memory-hygiene-nudge.md](references/memory-hygiene-nudge.md).
-7. During work, keep durable state in `docs/codex/`, not in global AGENTS.
+7. During work, use the internal memory workflow references when writing `docs/codex/`, and keep durable state there, not in global AGENTS.
 8. When touching Chinese text, UTF-8 files, JSON, Markdown, YAML, TOML, or logs, apply [references/encoding-discipline.md](references/encoding-discipline.md).
 9. After a meaningful run, user correction, repeated failure, or smoke test, use [references/run-audit-and-upgrade.md](references/run-audit-and-upgrade.md).
 10. For validation, use [references/test-plan.md](references/test-plan.md).
