@@ -22,15 +22,14 @@ https://159.75.127.201/agent-memory-stack/lite-demo/latest.json
 https://github.com/mushroom029/agent-memory-stack-lite-demo/tree/main/skills/agent-memory-stack-lite-demo
 ```
 
-不要安装旧的 `skills/context-memory-index`。v0.2.2 已将它收回为 Lite Demo 内部组件。
+不要安装旧的 `skills/context-memory-index`。这套机制已经是 Lite Demo 内部组件。
 
-## v0.2.2 升级说明
+## v0.2.4 升级说明
 
-- 一个包、一个 skill，修正 v0.2.0f 的错误拆分。
-- 只归档指纹完全匹配的旧版遗留 skill，保留用户修改过或独立安装的副本。
-- 已有工程协议时只做记忆，不叠加 Lite Demo 的轻量工程流程。
-- 精准索引按任务加载强相关记忆，不把整库塞进初始上下文。
-- 同版本不重复安装，不静默降级；安装失败非零退出，成功前复读真实版本。
+- 用 `Lite Demo 提醒：` 和一句话进度说明，减少“任务 A 是什么”的困惑。
+- 品牌提醒只用于记忆路由、边界或明确重叠风险，不打扰普通执行对话。
+- 明确“记忆可以分开记，但项目文件是同一份”，避免虚假安全感。
+- 继续保持一个包、一个 skill、已有工程协议时退让。
 - `v0.1.7` 继续作为稳定回退版。
 
 升级完成后，在项目会话中说：

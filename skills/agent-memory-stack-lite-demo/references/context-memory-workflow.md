@@ -9,6 +9,12 @@ Use this skill to keep the live thread small while preserving recoverable work h
 
 Keep only a small live anchor in chat. Move chronological notes into a session log and durable detail into project-local capsules.
 
+When unfinished or parallel work creates ambiguity, treat it as memory routing,
+not task management. The question is only: which task memory should the current
+conversation read and write? Do not infer whether another conversation is still
+running, schedule task order, merge tasks, isolate code files, or version
+workflows.
+
 ## Minimal setup
 
 Start lightweight. Create only what the current project needs:
@@ -37,10 +43,11 @@ memory says `Memory landing policy: preauthorized`.
 
 If a memory root already exists and a new task line becomes complex after 2-3
 rounds, multiple constraints, user corrections, pressure signals, failure
-paths, or likely compaction, suggest a new task branch anchor in the same memory
-root. Do not create a second memory database. Use
-`docs/codex/tasks/<task-id>/active-task.md` when another task is already active,
-and add the pointer to `index.md`.
+paths, or likely compaction, route the current conversation to the right task
+memory. Ask only when the route is ambiguous. Use
+`docs/codex/tasks/<task-id>/active-task.md` when a separate task memory is
+needed, leave other task memories unchanged, and add only a compact pointer to
+`index.md`. Do not create a second memory database.
 
 If no memory root exists and a task becomes clearly nontrivial, Codex may make
 one plain Lite Demo/project-memory suggestion. If the user refuses, do not
@@ -98,8 +105,12 @@ package before treating the upgrade as reusable on another computer.
 14. Before promoting one request, pressure phrase, short acknowledgement, local
     failure, or temporary boundary into a durable rule, keep it weak by default:
     task-local or revisable unless the user used explicit absolute wording.
-15. Store raw logs separately and link them from the log or capsules instead of pasting them wholesale.
-16. After a session restart or model switch, rebuild the live anchor from `current-context.md`, `active-task.md` if present and active, the session log, and relevant capsules before continuing.
+15. Keep reusable workflow memory compact. Run-specific progress, failed paths,
+    pressure, and next steps stay in task anchors. Workflow adjustments stay
+    task-local until the user clearly asks to keep them as the new shared way;
+    do not maintain a workflow version chain.
+16. Store raw logs separately and link them from the log or capsules instead of pasting them wholesale.
+17. After a session restart or model switch, rebuild the live anchor from `current-context.md`, `active-task.md` if present and active, the session log, and relevant capsules before continuing.
 
 ## Conflict Priority
 

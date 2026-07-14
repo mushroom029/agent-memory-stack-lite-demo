@@ -1,6 +1,6 @@
 ---
 name: agent-memory-stack-lite-demo
-description: Install, update, and operate a memory-only Codex demo stack with project-local current-context, index, capsules, session logs, active-task anchors, execution-protocol compatibility, adaptive lite-anchor fallback, one-time passive activation suggestion, and memory-hygiene guards that keep temporary requests, pressure phrases, failures, and short acknowledgements from becoming hard long-term rules. Use when the user says "启用外挂记忆", "启动外挂记忆", "本会话启用外挂记忆", the legacy phrase "启动lite demo", asks to upgrade/update Lite Demo through the official server, tests a downgrade/demo edition of external memory, installs from a fresh-machine zip, sets up project docs/codex memory, preserves failed paths, records task-scoped execution-protocol evidence, or proves compression/interruption recovery without external executors or extra credential setup.
+description: Install, update, and operate a memory-only Codex demo stack with project-local current-context, index, capsules, session logs, active-task anchors, task-memory routing for unfinished or parallel conversations, execution-protocol compatibility, adaptive lite-anchor fallback, one-time passive activation suggestion, and memory-hygiene guards that keep temporary requests, pressure phrases, failures, and short acknowledgements from becoming hard long-term rules. Use when the user says "启用外挂记忆", "启动外挂记忆", "本会话启用外挂记忆", the legacy phrase "启动lite demo", asks to upgrade/update Lite Demo through the official server, tests a downgrade/demo edition of external memory, installs from a fresh-machine zip, sets up project docs/codex memory, preserves failed paths, records task-scoped execution-protocol evidence, asks to continue or separately record a new task while another task memory exists, or proves compression/interruption recovery without external executors or extra credential setup.
 ---
 
 # Agent Memory Stack Lite Demo
@@ -16,6 +16,8 @@ Help Codex keep the route of a real task visible:
 - which paths failed;
 - what the next exact step is;
 - how to resume after compression, restart, or thread reuse.
+- which task memory the current conversation should read/write when unfinished
+  or parallel work creates ambiguity.
 - whether the latest meaningful run had route, artifact, encoding, or memory-hygiene risk.
 
 Do not present the demo as universal problem solving. The value is route retention and recovery.
@@ -39,6 +41,12 @@ When a no-memory project becomes nontrivial, Lite Demo may suggest activation
 once in plain Chinese. If the user refuses, do not create memory or persist that
 refusal; just stop suggesting again in the current chat. A later explicit
 activation phrase overrides the temporary skip.
+
+When a memory root already has an unfinished task and the current conversation
+might be a new task line, Lite Demo only routes memory. It answers one question:
+which task memory should this conversation use? It must not manage task
+lifecycles, decide whether another conversation is still running, schedule task
+order, isolate code files, merge tasks, or version workflows.
 
 ## Internal memory workflow
 
@@ -76,7 +84,8 @@ When the user uses any activation phrase, treat it as an activation command for 
 1. For fresh-machine install, read [references/install-new-machine.md](references/install-new-machine.md).
 2. For short activation after install, read [references/startup-protocol.md](references/startup-protocol.md).
 3. For a target project, install project guidance with `scripts/install.ps1 -ProjectRoot <path> -WriteProjectAgents`.
-4. Before creating a first memory root or splitting a new task line, apply [references/memory-creation-and-task-branch-gate.md](references/memory-creation-and-task-branch-gate.md).
+4. Before creating a first memory root or routing a current conversation to an
+   existing or new task memory, apply [references/memory-creation-and-task-branch-gate.md](references/memory-creation-and-task-branch-gate.md).
 5. Before complex or compaction-sensitive execution, silently sniff once with [references/execution-policy-compatibility.md](references/execution-policy-compatibility.md). If another engineering protocol owns execution, keep Lite Demo's fallback off and use [references/task-anchor-gate.md](references/task-anchor-gate.md) only as its memory mirror.
 6. Before converting ambiguous user language into durable project rules, apply [references/memory-hygiene-nudge.md](references/memory-hygiene-nudge.md).
 7. During work, use the internal memory workflow references when writing `docs/codex/`, and keep durable state there, not in global AGENTS.

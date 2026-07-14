@@ -90,6 +90,27 @@ If a memory root already exists and a new task line becomes complex, keep it
 inside the same root. Prefer `tasks/<task-id>/active-task.md` for parallel
 anchors and add a pointer in `index.md`; do not create a second database.
 
+In this situation Lite Demo is doing memory routing only. It binds the current
+conversation to an existing or new task memory; it does not decide whether an old task is still running, schedule tasks, merge tasks, isolate code files, or
+maintain workflow versions.
+
+When an unfinished task makes the route ambiguous, ask:
+
+```text
+Lite Demo 提醒：我看到一个没做完的记录：“<一句话任务名>”。
+上次进度是：<一句话进度或下一步>。
+这次是接着做它，还是为当前想法单独创建一份记忆？
+单独记录不会覆盖原来的进度。
+```
+
+If the user clearly asks for a new task or to use the same method again, do not
+ask again. Create or reuse a task-local anchor, keep the old task memory
+unchanged, and record only compact task pointers in `index.md`.
+
+Use `Lite Demo 提醒：` only for memory routing, memory/risk boundaries, or clear
+overlap warnings. Do not use it for ordinary progress reports or code
+explanations, and do not replace every "我" with the skill name.
+
 ## Read order
 
 1. `current-context.md`
@@ -107,6 +128,11 @@ Do not resume from its `Next exact step` or `Resume instruction`.
 Templates define suggested fields, not a strict schema. Projects may use clearer
 local headings, but the retrieval meaning must remain visible: current anchor,
 active goal, evidence links, next step, and capsule pointers.
+
+When multiple task memories exist, treat `current-context.md` as a project
+router rather than one global next-step store. Each task's goal, progress,
+failed paths, pressure, temporary constraints, and next exact step belong in
+that task's own `active-task.md`.
 
 ## Update order
 
