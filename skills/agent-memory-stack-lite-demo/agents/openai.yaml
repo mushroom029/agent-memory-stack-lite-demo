@@ -1,7 +1,0 @@
-interface:
-  display_name: "Agent Memory Lite Demo"
-  short_description: "Memory recovery, task routing, audit, and hygiene guards"
-  default_prompt: "Use $agent-memory-stack-lite-demo：启用外挂记忆 / 启动外挂记忆。"
-
-policy:
-  allow_implicit_invocation: true
