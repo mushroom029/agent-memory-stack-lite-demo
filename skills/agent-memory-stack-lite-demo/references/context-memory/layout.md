@@ -10,8 +10,9 @@ Use a project-local context workspace that separates active state from durable h
 └── docs/codex/
     ├── current-context.md
     ├── index.md
+    ├── routes/                      # one-level cold version/event route pages
     ├── active-task.md   # optional, for long/risky tasks in progress
-    ├── session-log.md   # optional, for active investigations
+    ├── session-log.md   # sparse initialization/takeover proof plus admitted items
     ├── tasks/           # optional, parallel task anchors
     │   └── <task-id>/active-task.md
     └── capsules/
@@ -29,8 +30,9 @@ Memory root:
 docs/codex/
 ├── current-context.md
 ├── index.md
+├── routes/          # optional one-level cold version/event route pages
 ├── active-task.md   # optional, for long/risky tasks in progress
-├── session-log.md   # optional, for active investigations
+├── session-log.md   # sparse initialization/takeover proof plus admitted items
 ├── tasks/           # optional, parallel task anchors
 │   └── <task-id>/active-task.md
 └── capsules/
@@ -116,10 +118,12 @@ explanations, and do not replace every "我" with the skill name.
 1. `current-context.md`
 2. `index.md`
 3. Derive the touched module/entity/behavior/version/risk, then use `index.md`
-   to resolve every matching `owners=` and `mandatory=` pointer. Do not stop at
-   a top-k subset.
+   to resolve every matching current `owners=` and `mandatory=` pointer. If a
+   matched route has `history=`, scan that one route page and open only its
+   precisely matched version/event owners. Do not stop at a top-k subset.
 4. `active-task.md` if present and not marked complete
-5. Every matched owner, with mandatory guard owners opened first
+5. Every matched current and historical owner, with mandatory guard owners
+   opened first
 6. The most recent 30-60 `session-log.md` lines or a few sparse checkpoints as
    a recency probe; this is not a cap on selected relevant memory and never
    means reading a long log in full by default
@@ -145,7 +149,8 @@ that task's own `active-task.md`.
    `SKILL.md`'s Compaction Interruption Gate.
 3. Update `current-context.md` before deliberate compaction or a major phase shift.
 4. Choose one body owner for each durable fact and update it once.
-5. Refresh `index.md` with a compact scope/alias/keyword -> owner route. A
+5. Refresh `index.md` with a compact scope/alias/keyword -> current owner,
+   mandatory guard, optional one-level history route. A
    durable write is incomplete until this wake-up route exists.
 6. Append to `session-log.md` only for an unresolved failure/conflict,
    rollback, unpromoted correction, `[REVIEW:<id>]` provisional body, or sparse
@@ -193,13 +198,15 @@ operations for older evidence. These reads must not modify the append-only log.
 ## Validation helper
 
 Run `scripts/route-memory.py <memory-root> --touch <action>` to resolve matching
-owners. Run `scripts/check-memory-root.py <memory-root>` to check missing
+current owners, mandatory guards, and precise one-level history routes. Run
+`scripts/check-memory-root.py <memory-root>` to check missing
 routes/owners, broken pointers, stranded review entries, repeated live fields,
 cross-layer narrative duplication, and weak stabilization metadata.
 
-For a legacy root, run `scripts/takeover-memory.py inspect <memory-root>`, then
-`apply`, then `verify`. The helper records the old byte length and prefix SHA256
-and appends one idempotent v0.2.6 checkpoint to the same `session-log.md`. It
+For an existing root, run `scripts/takeover-memory.py inspect <memory-root>`,
+then `apply`, then `verify`. The helper records the old byte length and prefix
+SHA256 and appends one idempotent current-version checkpoint to the same
+`session-log.md`. It
 must not rename, rotate, or rewrite the old log.
 
 ## Index recovery

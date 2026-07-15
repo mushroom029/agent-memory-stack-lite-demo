@@ -1,7 +1,9 @@
 # Automatic Legacy Memory Takeover
 
-Use this automatically on the first Lite Demo v0.2.6 activation inside an
-existing pre-v0.2.6 memory root. Do not require a second user command.
+Use this automatically on the first Lite Demo v0.2.7 activation inside any
+existing memory root that has not completed the current takeover. This includes
+pre-v0.2.6 roots, correct v0.2.6 roots, and partially reorganized roots. Do not
+require a second user command.
 
 ## Activation Boundary
 
@@ -22,9 +24,12 @@ Run `scripts/takeover-memory.py inspect <memory-root>`.
 - `takeover_required: true`: perform the steps below before the normal
   activation response.
 
-Completion requires both `Memory schema: v0.2.6` in `index.md` and a verified
-same-file checkpoint when `session-log.md` existed or was created for takeover.
-Never rely on the package version alone.
+Completion has one rule with no exception: `index.md` must contain exactly one
+memory-schema entry set to `v0.2.7`, and `session-log.md` must contain exactly
+one verified v0.2.7 checkpoint. A package version, schema alone, duplicate or
+conflicting schema entries, no log, or an older v0.2.6 checkpoint does not prove
+completion. Branch only on `takeover_required`; do not combine fields or infer
+completion independently.
 
 ## Automatic Takeover
 
@@ -32,13 +37,16 @@ Never rely on the package version alone.
    log exists. These identify the immutable legacy prefix.
 2. Use a task-local takeover anchor under `tasks/` so an old active task is not
    overwritten. Record only the migration route, not old-task progress.
-3. Read `current-context.md`, `index.md`, active task metadata, capsule
+3. Do not write `Memory schema: v0.2.7` manually. Read `current-context.md`,
+   `index.md`, active task metadata, capsule
    filenames/headings/fields, and known domain-store maps. Do not read a long
    session log in full.
 4. Convert legacy routes into compact
-   `scope/aliases/keywords -> owners + mandatory + reason` entries. Give each
-   durable body one normative owner and route every capsule/domain body that
-   must remain reachable.
+   `scope/aliases/keywords -> owners + mandatory + history + reason` entries.
+   `owners` contains current normative bodies; `mandatory` contains every live
+   touched-scope guard. Put cold versions/events behind one precise route page
+   under `routes/`, and keep that page to one level. Do not leave many old
+   version capsules attached to one generic top-level route.
 5. Ensure touched scopes can wake all explicit prohibitions, rejected paths,
    stable behavior, acceptance criteria, unresolved conflicts, and
    irreversible-action guards. Use bounded log tail/search/range reads only to
@@ -49,25 +57,33 @@ Never rely on the package version alone.
 7. Slim `current-context.md` and live task anchors to current state and owner
    pointers. Never rewrite, rotate, rename, delete, or summarize over the old
    session log.
-8. Run `scripts/check-memory-root.py <memory-root> --strict-routing
+8. Probe representative ordinary-language task phrases with
+   `route-memory.py`. Fix boundary misses, false substring matches, missing live
+   guards, and broad primary owner fan-out. Then run
+   `scripts/check-memory-root.py <memory-root> --strict-routing
    --allow-missing-schema`. Do not complete takeover if it fails.
 9. Run `inspect` again and pass its current index/log hashes to `apply`, plus
    the initial legacy prefix identity when one existed:
 
    ```text
    takeover-memory.py apply <memory-root> --routes-verified \
-     --expected-index-sha256 <current-index-hash> \
-     --expected-log-sha256 <current-log-hash> \
-     --legacy-prefix-bytes <initial-bytes> \
-     --legacy-prefix-sha256 <initial-hash>
+      --expected-index-sha256 <current-index-hash> \
+      --expected-log-sha256 <current-log-hash> \
+      --legacy-prefix-bytes <initial-bytes> \
+      --legacy-prefix-sha256 <initial-hash>
    ```
 
-   Omit log/prefix arguments when the corresponding file did not exist at
-   preflight. The helper writes the schema marker only after the checkpoint is
-   safe.
+   If no log existed at preflight, omit log/prefix arguments and pass
+   `--expect-no-log`. The helper writes the schema only after the checkpoint is
+   safe. An old v0.2.6 checkpoint stays inside the preserved prefix and does
+   not count as the current checkpoint.
 10. Run strict validation without `--allow-missing-schema`, then run
     `takeover-memory.py verify <memory-root>` and a final `inspect`. Completion
-    requires `takeover_required: false`.
+    requires `completion_verified: true` and `takeover_required: false`.
+11. Independently inspect the resulting files: the current marker must exist
+    exactly once, old bytes must match the recorded prefix, and no business
+    file may have changed. A second normal activation must leave the complete
+    memory directory byte- and timestamp-identical.
 
 If a relevant memory file changes after the final preflight, apply must stop.
 Do not mark completion or retry over the concurrent write.

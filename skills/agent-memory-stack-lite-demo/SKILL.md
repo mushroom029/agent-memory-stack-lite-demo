@@ -1,6 +1,6 @@
 ---
 name: agent-memory-stack-lite-demo
-description: Install, update, and operate a memory-only Codex demo stack with project-local current-context, index, capsules, session logs, active-task anchors, automatic one-time takeover of pre-v0.2.6 project memory on first activation after upgrade, task-memory routing for unfinished or parallel conversations, execution-protocol compatibility, adaptive lite-anchor fallback, one-time passive activation suggestion, and memory-hygiene guards. Use when the user says "启用外挂记忆", "启动外挂记忆", "本会话启用外挂记忆", the legacy phrase "启动lite demo", asks to upgrade/update Lite Demo, opens an old Lite Demo project after upgrade, installs from a fresh-machine zip, sets up project docs/codex memory, preserves failed paths, routes parallel task memory, or proves compression/interruption recovery without external executors or extra credentials.
+description: Install, update, and operate a memory-only Codex demo stack with project-local current-context, layered current/history routes, capsules, sparse session logs, active-task anchors, automatic one-time takeover of older project memory on the first activation after upgrade, and a one-time passive activation suggestion. Use when the user says "启用外挂记忆", "启动外挂记忆", "本会话启用外挂记忆", the legacy phrase "启动lite demo", asks to upgrade/update Lite Demo, opens an old Lite Demo project after upgrade, installs from a fresh-machine zip, sets up project docs/codex memory, preserves failed paths, routes parallel task memory, or proves compression/interruption recovery without external executors or extra credentials.
 ---
 
 # Agent Memory Stack Lite Demo
@@ -84,7 +84,7 @@ When the user uses any activation phrase, treat it as an activation command for 
 ## Workflow
 
 1. For fresh-machine install, read [references/install-new-machine.md](references/install-new-machine.md).
-2. For short activation after install, read [references/startup-protocol.md](references/startup-protocol.md). On an existing memory root, also apply [references/automatic-legacy-takeover.md](references/automatic-legacy-takeover.md) once when v0.2.6 completion markers are absent.
+2. For short activation after install, read [references/startup-protocol.md](references/startup-protocol.md). On an existing memory root, also apply [references/automatic-legacy-takeover.md](references/automatic-legacy-takeover.md) once unless exactly one current schema entry and exactly one current-version checkpoint both verify. The installed helper owns this decision even when an old project AGENTS file still names an earlier version.
 3. For a target project, install project guidance with `scripts/install.ps1 -ProjectRoot <path> -WriteProjectAgents`.
 4. Before creating a first memory root or routing a current conversation to an
    existing or new task memory, apply [references/memory-creation-and-task-branch-gate.md](references/memory-creation-and-task-branch-gate.md).

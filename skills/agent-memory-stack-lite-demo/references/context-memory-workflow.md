@@ -95,8 +95,10 @@ package before treating the upgrade as reusable on another computer.
 2. Read the compact routing layer in `index.md`.
 3. Derive the module, entity, behavior, version, and risk touched by the current
    action. Match them against strong-relevance keywords, aliases, topics, and
-   scope routes. Follow every matching route to its normative body owners; do
-   not use a top-k cutoff.
+   scope routes. Follow every matching route to its current normative owners
+   and all mandatory guards. If the route points to a one-level `history=`
+   page, scan it and open only precisely matched versions/events. Do not use a
+   top-k cutoff.
 4. Read `active-task.md` if present and not complete.
 5. Use roughly 30-60 recent `session-log.md` lines or a few sparse checkpoints
    only as a recency probe when the work is active or interrupted. This is not
@@ -144,8 +146,13 @@ package before treating the upgrade as reusable on another computer.
 - One durable fact has one normative body owner.
 - `index.md` is the compact owner router; do not create a second owner manifest.
 - Use route entries shaped as `scope: aliases=...; keywords=...; owners=...;
-  mandatory=...; reason=...`. `mandatory` points to touched-scope guard owners
+  mandatory=...; history=...; reason=...`. `owners` means current normative
+  bodies. `mandatory` points to touched-scope guard owners
   that must all be opened.
+- Put cold versions/events behind one route page under `routes/`. The page uses
+  the same grammar, has precise version/event aliases, and cannot point to a
+  second route page. Keep every still-live prohibition or stable boundary in a
+  top-level mandatory owner.
 - Explicit prohibitions, rejected paths, stable behavior, acceptance criteria,
   unresolved conflicts, and irreversible-action guards are mandatory recall.
 - A durable write is incomplete until its route exists. When ownership is
@@ -157,7 +164,8 @@ package before treating the upgrade as reusable on another computer.
 
 ## First Activation After Upgrade
 
-On the first v0.2.6 activation in an existing legacy memory root, apply
+On the first v0.2.7 activation in an existing memory root that lacks current
+dual completion proof, apply
 `automatic-legacy-takeover.md` automatically before the normal activation
 response. This is memory maintenance, not old-task execution. Successful
 takeover changes what future recovery injects, so the next context cleanup or

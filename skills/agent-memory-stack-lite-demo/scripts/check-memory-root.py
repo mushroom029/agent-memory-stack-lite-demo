@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import re
 import sys
 from collections import defaultdict
@@ -29,7 +30,16 @@ ACTIVE_TASK_SOFT_CHARS = 16_000
 SESSION_LOG_TAIL_ONLY_LINES = 240
 NARRATIVE_LINE_SOFT_CHARS = 500
 NARRATIVE_DUPLICATION_SOFT_CHARS = 180
-MEMORY_SCHEMA_VERSION = "v0.2.6"
+MEMORY_SCHEMA_VERSION = "v0.2.7"
+CURRENT_CHECKPOINT_MARKER = "<!-- LITE-DEMO-V0.2.7-CHECKPOINT -->"
+MEMORY_SCHEMA_RE = re.compile(
+    r"^[ \t]*-[ \t]*Memory schema:[ \t]*(\S+)[ \t]*\r?$", re.I | re.MULTILINE
+)
+CHECKPOINT_LENGTH_RE = re.compile(r"^- Legacy prefix bytes:\s*(\d+)\s*$", re.MULTILINE)
+CHECKPOINT_HASH_RE = re.compile(
+    r"^- Legacy prefix SHA256:\s*([0-9A-Fa-f]{64})\s*$", re.MULTILINE
+)
+PRIMARY_OWNER_FANOUT_SOFT_COUNT = 8
 STRICT_ROUTING_WARNING_PARTS = (
     "has no Memory schema",
     "has no Module aliases section",
@@ -42,6 +52,15 @@ STRICT_ROUTING_WARNING_PARTS = (
     "appears to contain chronological sections",
     "has a long narrative line",
     "has multiple body owners",
+    "points outside routes/ for history",
+    "points to missing history route",
+    "history route nesting exceeds one level",
+    "history route page has no top-level pointer",
+    "appears in both primary and history routes",
+    "has current schema but no v0.2.7 checkpoint",
+    "Memory schema entries; exactly one required",
+    "must contain exactly one v0.2.7 checkpoint",
+    "v0.2.7 checkpoint is invalid",
 )
 
 
@@ -78,7 +97,7 @@ def index_capsule_ids(index_text: str) -> set[str]:
     return ids
 
 
-def route_entries(index_text: str) -> list[dict[str, object]]:
+def route_entries(index_text: str, source: str = "index.md") -> list[dict[str, object]]:
     entries: list[dict[str, object]] = []
     for line_number, line in enumerate(index_text.splitlines(), 1):
         match = ROUTE_LINE_RE.match(line)
@@ -97,13 +116,20 @@ def route_entries(index_text: str) -> list[dict[str, object]]:
             for item in VALUE_SPLIT_RE.split(route_fields.get("mandatory", ""))
             if item.strip().strip("`\"'").casefold() not in {"", "none", "n/a"}
         ]
+        history = [
+            item.strip().strip("`\"'")
+            for item in VALUE_SPLIT_RE.split(route_fields.get("history", ""))
+            if item.strip().strip("`\"'").casefold() not in {"", "none", "n/a"}
+        ]
         entries.append(
             {
                 "scope": match.group(1).strip(),
                 "owners": owners,
                 "mandatory": mandatory,
+                "history": history,
                 "status": route_fields.get("status", ""),
                 "line": line_number,
+                "source": source,
             }
         )
     return entries
@@ -146,6 +172,25 @@ def has_secret_like_text(text: str) -> bool:
     return any(pattern.search(text) for pattern in SECRET_PATTERNS)
 
 
+def checkpoint_is_valid(data: bytes) -> bool:
+    marker = CURRENT_CHECKPOINT_MARKER.encode("ascii")
+    if data.count(marker) != 1:
+        return False
+    try:
+        tail = data[data.index(marker) :].decode("utf-8")
+    except UnicodeDecodeError:
+        return False
+    length_match = CHECKPOINT_LENGTH_RE.search(tail)
+    hash_match = CHECKPOINT_HASH_RE.search(tail)
+    if not length_match or not hash_match:
+        return False
+    prefix_length = int(length_match.group(1))
+    if prefix_length > len(data):
+        return False
+    actual = hashlib.sha256(data[:prefix_length]).hexdigest().upper()
+    return actual == hash_match.group(1).upper()
+
+
 def validate(root: Path) -> tuple[list[str], list[str]]:
     errors: list[str] = []
     warnings: list[str] = []
@@ -169,6 +214,7 @@ def validate(root: Path) -> tuple[list[str], list[str]]:
     index_text = read_text(index) if index.exists() else ""
     active_text = read_text(active_task) if active_task.exists() else ""
     session_text = read_text(session_log) if session_log.exists() else ""
+    session_data = session_log.read_bytes() if session_log.exists() else b""
     active_paths = [active_task] if active_task.exists() else []
     tasks_dir = root / "tasks"
     if tasks_dir.exists():
@@ -238,11 +284,34 @@ def validate(root: Path) -> tuple[list[str], list[str]]:
             warnings.append("testing/stabilization mode has no regression guards")
 
     if index_text:
-        schema = fields(index_text).get("memory schema", "")
-        if schema.casefold() != MEMORY_SCHEMA_VERSION.casefold():
+        schemas = MEMORY_SCHEMA_RE.findall(index_text)
+        schema_is_current = len(schemas) == 1 and (
+            schemas[0].casefold() == MEMORY_SCHEMA_VERSION.casefold()
+        )
+        if not schemas:
             warnings.append(
                 f"index.md has no Memory schema: {MEMORY_SCHEMA_VERSION} takeover marker"
             )
+        elif len(schemas) != 1:
+            warnings.append(
+                f"index.md has {len(schemas)} Memory schema entries; exactly one required"
+            )
+        elif not schema_is_current:
+            warnings.append(
+                f"index.md has no Memory schema: {MEMORY_SCHEMA_VERSION} takeover marker"
+            )
+
+        checkpoint_count = session_data.count(CURRENT_CHECKPOINT_MARKER.encode("ascii"))
+        if checkpoint_count == 0 and schema_is_current:
+            warnings.append(
+                "index.md has current schema but no v0.2.7 checkpoint; takeover is incomplete"
+            )
+        elif checkpoint_count > 1:
+            warnings.append(
+                f"session-log.md must contain exactly one v0.2.7 checkpoint; found {checkpoint_count}"
+            )
+        elif checkpoint_count == 1 and not checkpoint_is_valid(session_data):
+            warnings.append("session-log.md v0.2.7 checkpoint is invalid")
 
         ids = index_capsule_ids(index_text)
         if ids and not capsules_dir.exists():
@@ -263,26 +332,84 @@ def validate(root: Path) -> tuple[list[str], list[str]]:
         if "module aliases" not in index_text.lower():
             warnings.append("index.md has no Module aliases section")
 
-        routes = route_entries(index_text)
+        top_routes = route_entries(index_text)
+        routes = list(top_routes)
+        history_routes: list[dict[str, object]] = []
+        history_route_paths: set[Path] = set()
+        routes_root = (root / "routes").resolve()
+        for route in top_routes:
+            if len(route["owners"]) > PRIMARY_OWNER_FANOUT_SOFT_COUNT:
+                warnings.append(
+                    f"index.md route '{route['scope']}' has broad primary owner fan-out; keep current owners here and move cold version/event routes under routes/"
+                )
+            for pointer in route["history"]:
+                target = pointer_path(root, pointer)
+                try:
+                    target.relative_to(routes_root)
+                except ValueError:
+                    warnings.append(
+                        f"index.md route '{route['scope']}' points outside routes/ for history: {pointer}"
+                    )
+                    continue
+                if not target.is_file():
+                    warnings.append(
+                        f"index.md route '{route['scope']}' points to missing history route: {pointer}"
+                    )
+                    continue
+                if target in history_route_paths:
+                    continue
+                history_route_paths.add(target)
+                child_source = str(target.relative_to(root))
+                child_entries = route_entries(read_text(target), child_source)
+                for child in child_entries:
+                    if child["history"]:
+                        warnings.append(
+                            f"{child_source} route '{child['scope']}' history route nesting exceeds one level"
+                        )
+                history_routes.extend(child_entries)
+        routes.extend(history_routes)
+
+        if routes_root.is_dir():
+            for route_page in sorted(routes_root.rglob("*.md")):
+                if route_page.resolve() not in history_route_paths:
+                    warnings.append(
+                        f"{route_page.relative_to(root)} history route page has no top-level pointer"
+                    )
+
         routed_pointers = {
             pointer for route in routes for pointer in (*route["owners"], *route["mandatory"])
         }
+        primary_owners = {
+            pointer_path(root, pointer)
+            for route in top_routes
+            for pointer in route["owners"]
+        }
+        historical_owners = {
+            pointer_path(root, pointer)
+            for route in history_routes
+            for pointer in route["owners"]
+        }
+        duplicated_tiers = sorted(primary_owners.intersection(historical_owners))
+        for duplicated in duplicated_tiers:
+            warnings.append(
+                f"{duplicated} appears in both primary and history routes"
+            )
         for route in routes:
             if not route["owners"]:
                 warnings.append(
-                    f"index.md route '{route['scope']}' has owners= but no normative body owner"
+                    f"{route['source']} route '{route['scope']}' has owners= but no normative body owner"
                 )
             for pointer in (*route["owners"], *route["mandatory"]):
                 target = pointer_path(root, pointer)
                 if not target.is_file():
                     warnings.append(
-                        f"index.md route '{route['scope']}' points to missing owner: {pointer}"
+                        f"{route['source']} route '{route['scope']}' points to missing owner: {pointer}"
                     )
                     continue
                 fragment = pointer_fragment(pointer)
                 if fragment and fragment.casefold() not in read_text(target).casefold():
                     warnings.append(
-                        f"index.md route '{route['scope']}' owner fragment was not found: {pointer}"
+                        f"{route['source']} route '{route['scope']}' owner fragment was not found: {pointer}"
                     )
 
         if capsules_dir.exists():
@@ -355,7 +482,14 @@ def strict_routing_warnings(
         warning
         for warning in warnings
         if any(part in warning for part in STRICT_ROUTING_WARNING_PARTS)
-        and not (allow_missing_schema and "has no Memory schema" in warning)
+        and not (
+            allow_missing_schema
+            and (
+                "has no Memory schema" in warning
+                or "has current schema but no v0.2.7 checkpoint" in warning
+                or "Memory schema entries; exactly one required" in warning
+            )
+        )
     ]
 
 
@@ -374,7 +508,7 @@ def main() -> int:
     )
     args = parser.parse_args()
 
-    errors, warnings = validate(args.root)
+    errors, warnings = validate(args.root.expanduser().resolve())
     strict_warnings = (
         strict_routing_warnings(warnings, args.allow_missing_schema)
         if args.strict_routing

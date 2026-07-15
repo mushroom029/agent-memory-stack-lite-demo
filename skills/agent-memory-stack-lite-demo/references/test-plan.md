@@ -30,14 +30,36 @@ Do not treat a local polish package as ready unless:
   deterministic touched-scope fixtures;
 - a route miss and irreversible action request wider retrieval instead of
   claiming that no historical boundary exists;
-- legacy takeover preserves the recorded byte prefix and SHA256, appends only
-  one same-file checkpoint, and a second takeover is byte-idempotent;
+- legacy takeover preserves the recorded byte prefix and SHA256, leaves exactly
+  one current same-file checkpoint and one current schema entry, and a second
+  takeover is byte-idempotent;
 - first activation detects an old unmarked root and automatically enters
   memory-only takeover without a second user command or old-task execution;
-- a new v0.2.6 root skips takeover, a legacy no-log root receives one sparse
-  checkpoint, and a broken owner route cannot receive completion markers;
+- a fresh v0.2.7 root is created only by trusted atomic initialization (the
+  bundled `initialize` command or the package/install initialization helper)
+  and immediately has one current schema plus one sparse checkpoint;
+  `initialize` rejects any existing root;
+- a legacy no-log root, a root where v0.2.7 schema was written prematurely,
+  and a correct v0.2.6 root all require one v0.2.7 takeover; a broken owner
+  route cannot receive current completion proof;
 - successful takeover makes the next `inspect` report `takeover_required:
   false`; later activation is read-only with respect to migration state;
+- duplicate or conflicting schema entries, bad/missing checkpoint fields, a
+  bad prefix hash, and duplicate current markers cannot claim completion;
+- a log create/append or index mutation injected during strict checking stops
+  apply, preserves the concurrent content, and writes no schema/checkpoint;
+- real activation validation starts from an untouched old-project copy, gives
+  Codex only an activation phrase, and independently checks the resulting
+  schema/checkpoint, routes, business-file boundary, and second-activation full
+  directory byte/timestamp identity;
+- `health` does not match `Healthmonitor`, `C5` does not match `C50`, and
+  `v0.2.7` does not match `v0.2.70`; weak short terms cannot open a route by
+  themselves;
+- generic current work loads primary owners plus every mandatory guard but no
+  cold history owner; an explicit version/event descends into exactly one
+  `routes/` page and loads every precise match without top-k;
+- missing, outside-root, nested, orphan, or primary/history-duplicate route
+  pages fail strict takeover validation and do not load invalid history owners;
 - checker warnings cover missing owner routes, broken owner pointers, stranded
   `[REVIEW]` items, repeated live fields, and long cross-layer narrative copies;
 - an early rejected path remains retrievable through targeted search even when
