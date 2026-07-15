@@ -9,24 +9,12 @@
 - Project:
 - Project phase: exploration | testing/stabilization | scoped-build
 - Memory landing policy: ask-by-default | preauthorized
-- Module aliases:
 - Active version:
-- Active run:
-- Active module:
 - Baseline:
-- Active hypothesis:
-- Known failures:
-- Stable behavior:
-- 稳定模块保护判断:
-- Memory hygiene:
-- Latest run audit:
-- Artifact discipline:
-- Encoding check:
-- Pressure signals:
-- Rejected approaches:
-- Regression guards:
+- Active task pointer:
+- Active scope terms:
+- Selected owner routes:
 - Evidence links:
-- Session log:
 - Next step:
 - Do not assume:
 ```
@@ -39,24 +27,33 @@
 - Updated:
 - Project:
 - Memory landing policy: ask-by-default | preauthorized
-- Active run:
-- Current focus:
-- Recent actions:
-- Decisions:
-- Pressure signals:
-- Pressure status updates:
-- Rejected behavior:
-- Stable behavior:
-- 稳定模块保护判断:
-- Memory hygiene:
-- Latest run audit:
-- Artifact discipline:
-- Encoding check:
-- Errors:
-- Tests:
-- Evidence links:
-- Next step:
+
+<!-- Append only admitted unresolved items or sparse checkpoints below. -->
+
+## [UNRESOLVED:<id>] <failure | conflict | rollback | correction>
+
+- Scope:
+- Owner status:
+- Exact evidence:
+- Required next step:
+
+## [REVIEW:<id>] <provisional memory whose owner is uncertain>
+
+- Scope:
+- Aliases/keywords:
+- Provisional body:
+- Pending route: index.md -> session-log.md#REVIEW:<id>
+
+## [CHECKPOINT:<id>] <phase or interruption boundary>
+
+- Active task pointer:
+- Selected owner routes:
+- Next exact step:
+- Evidence:
 ```
+
+Do not append a narrative for routine green work, ordinary tool calls, or every
+successful test. Update the relevant owner or active route instead.
 
 ## active-task.md
 
@@ -79,14 +76,16 @@
 - Last approved route:
 - Interruption risk:
 - Activation packet:
+- Selected owner routes:
+- Mandatory guard owners:
 - Allowed changes:
-- Stable behavior:
+- Stable behavior: # short IDs/pointers unless this active task is the owner
 - 稳定模块保护判断:
 - Memory hygiene: task-local | revisable habit | hard boundary from explicit absolute wording
 - Artifact discipline:
 - Encoding check:
-- Pressure signals:
-- Rejected approaches:
+- Pressure signals: # short IDs/pointers unless this active task is the owner
+- Rejected approaches: # short IDs/pointers unless this active task is the owner
 - Current step:
 - Completed: # bounded milestone summary/evidence pointers, not chronology
 - Next exact step: # use "None; task complete" when Status is complete
@@ -105,6 +104,11 @@
 
 - Date:
 - Project:
+- Memory ID:
+- Memory class: durable-fact | explicit-prohibition | rejected-path | stable-behavior | acceptance-criterion | unresolved-conflict | irreversible-action-guard
+- Scope:
+- Aliases/keywords:
+- Wake-up route: index.md -> <scope route>
 - Version:
 - Phase/mode:
 - Module:

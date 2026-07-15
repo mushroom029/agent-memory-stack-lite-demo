@@ -10,21 +10,22 @@ observe -> audit note -> upgrade candidate -> human or maintainer judgment -> pa
 
 ## Where To Record
 
-Use `docs/codex/session-log.md` for append-only chronological notes. Recovery
-reads only the recent tail by default; older evidence is retrieved through a
-targeted search or bounded line range.
+Keep current run state in the active task. Put durable conclusions in one
+capsule or domain owner and add a compact owner route in `index.md`.
 
-Promote only durable lessons into `docs/codex/capsules/` without removing their
-original chronological log entries. Mirror explicit corrections, rejected
-paths, and stable boundaries at write time rather than depending on a future
-full-log read.
+Append to `docs/codex/session-log.md` only for unresolved failures/conflicts,
+rollbacks, unpromoted corrections, provisional `[REVIEW:<id>]` bodies, or a
+sparse phase/interruption checkpoint. Routine green runs with no durable delta
+receive no narrative log body. Preserve old log bytes as provenance.
 
 ## Run Audit Card
 
-Default output is this compact card only. Add a longer narrative appendix only
-when the card cannot carry the needed evidence or a maintainer explicitly asks
-for detail. The card is for Codex recovery after compression, not a user
-dashboard.
+When an audit summary is needed, use this compact card. Store it in the active
+task or relevant owner; place it in `session-log.md` only when it passes the
+admission gate. Add a longer narrative appendix only when the card cannot carry
+the needed evidence or a maintainer explicitly asks for detail. The card is for
+Codex recovery after compression, not a user dashboard or an automatic entry
+after every run.
 
 `Verdict: green | yellow | red` is this run's audit conclusion only. It is
 not a persistent global project state, autonomous monitor, automatic gate, or
@@ -45,6 +46,7 @@ permission to skip review.
 - Memory hygiene:
 - Tests/evidence:
 - Memory writes:
+- Owner route:
 - Upgrade candidate / decision:
 ```
 
@@ -58,6 +60,8 @@ permission to skip review.
 - `Artifact discipline`: reuse existing artifact before rerunning network/model calls unless the artifact is stale, invalid, missing, or the user explicitly asks to regenerate. Record the artifact path/evidence when relevant.
 - `Encoding check`: if Chinese memory/log/UI text changed, note UTF-8 write method and sentinel/mojibake result. See `encoding-discipline.md`.
 - `Memory hygiene`: note whether temporary requests, pressure, failures, or short replies stayed task-local/revisable instead of becoming hard rules.
+- `Owner route`: name the one body owner and its compact `index.md` wake-up route;
+  use `none` when the run produced no durable memory.
 - `Upgrade candidate / decision`: use `none`, `project-memory`, `skill-upgrade-candidate`, or `rejected`.
 
 ## Optional Longer Audit Appendix
@@ -107,7 +111,8 @@ Reject or keep as candidate-only when it is:
 - too broad for the demo boundary;
 - likely to create a worse habit.
 
-Do not auto-edit the skill after every run. Repeated evidence should drive package upgrades.
+Do not auto-edit the skill or append a log narrative after every run. Repeated
+evidence should drive package upgrades.
 
 Do not promote one ambiguous run, one pressure phrase, one failure, or one short
 reply into a hard project rule. If the lesson is useful but uncertain, record it

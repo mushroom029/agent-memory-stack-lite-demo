@@ -5,16 +5,18 @@ Use these patterns when the work is active and the live thread is starting to fe
 ## When to use session-log.md
 
 Create or update the project session log, such as `docs/codex/session-log.md`
-or the discovered project memory root's `session-log.md`, when:
+or the discovered project memory root's `session-log.md`, only when:
 
-- The task spans many tool calls or long discovery bursts.
-- You are comparing versions, hypotheses, or repeated failures.
-- You need a chronological record of decisions, errors, or test runs that should not live only in chat.
+- An unresolved failure, conflict, or rollback must survive interruption.
+- A user correction is not yet promoted to its final body owner.
+- Ownership is uncertain and one provisional `[REVIEW:<id>]` body plus a
+  pending index route is required.
+- A phase boundary or interruption needs one sparse recovery checkpoint.
 
 ## Update cadence
 
-- Flush the session log after each focused burst of discovery.
-- For search-, view-, or test-heavy work, write a log entry at least every two high-signal actions.
+- Do not write by tool-call count, elapsed work burst, or successful test count.
+- Routine green work with no new durable delta gets no session-log narrative.
 - During testing or bug-fix work, log strong user pressure as a pressure signal:
   affected module, rejected behavior, inferred constraint, recurrence, and
   required agent behavior.
@@ -24,24 +26,27 @@ or the discovered project memory root's `session-log.md`, when:
 - For rapid edit bursts in one module, batch `active-task.md` refreshes until
   the burst ends. End the burst and refresh after errors, test failures, user
   feedback, module switches, deployment, or rollback.
-- After a phase shift or deliberate compaction warning, sync `current-context.md` first, then `active-task.md` if present, then the log.
+- After a phase shift or deliberate compaction warning, sync `current-context.md`
+  and `active-task.md`, then append one sparse checkpoint only if those pointers
+  do not already make recovery clear.
 - Keep `session-log.md` append-only. A long log is cold local memory, not a
   default recovery payload. Do not delete, rotate, or rewrite older entries
   merely because the file grew.
 
 ## Recovery read policy
 
-- Start with roughly the most recent 30-60 lines or a few recent Run Audit
-  cards.
+- Start with roughly the most recent 30-60 lines or a few sparse checkpoints as
+  a recency probe, never as the total recall budget.
 - Never read a long `session-log.md` in full by default.
 - Read older content only through a targeted keyword search or a bounded line
   range when `active-task.md` points to evidence, sources conflict, or required
   information is missing.
-- A search miss is a reason to refine the query or inspect a bounded range, not
-  a reason to discard the full local log.
-- Mirror explicit user corrections, rejected approaches, and stable boundaries
-  into the active anchor or a capsule when they are written, so a retrieval
-  miss cannot silently resurrect a rejected route.
+- A search miss, alias ambiguity, source conflict, first-time entity touch, or
+  irreversible action is a reason to widen retrieval, not proof that no
+  historical boundary exists.
+- Give explicit corrections, rejected approaches, and stable boundaries one
+  body owner plus a compact index route when written. Do not mirror their full
+  narrative into every layer.
 - The internal `scripts/read-session-log.py` helper provides a 60-line default
   tail plus explicit search/range modes without modifying the source log.
 
@@ -100,8 +105,8 @@ capsule.
 - Move stable conclusions, rejected hypotheses, and durable version judgments into capsules.
 - Move repeated pressure signals, disproven approaches, and do-not-resurrect
   decisions into capsules.
-- Keep the full session log as cold chronological history. Default recovery
-  still reads only the recent tail.
+- Keep all old session-log bytes as cold evidence. New entries still obey the
+  admission gate, and default recovery uses only the recency probe.
 - Leave raw logs, screenshots, and traces in separate files and link to them.
 
 ## Reboot check

@@ -3,11 +3,15 @@
 This is an internal reference for `$agent-memory-stack-lite-demo`, not a
 standalone skill. Do not ask the user to install or activate it separately.
 
-Use this skill to keep the live thread small while preserving recoverable work history on disk.
+Use this skill to keep memory on disk while loading only the owners that matter
+to the current action.
 
 ## Core idea
 
-Keep only a small live anchor in chat. Move chronological notes into a session log and durable detail into project-local capsules.
+Keep only a small live anchor and routing vocabulary in chat. Give every
+durable fact one normative body owner, then keep only compact wake-up routes in
+the other memory layers. Local memory may remain large; default context must
+not become a copy of the whole store.
 
 When unfinished or parallel work creates ambiguity, treat it as memory routing,
 not task management. The question is only: which task memory should the current
@@ -23,7 +27,9 @@ Start lightweight. Create only what the current project needs:
 2. `index.md` for active version/topic, module aliases, keyword navigation, and capsule pointers.
 3. Capsules as stable conclusions, rejected approaches, pressure signals, or regression guards become durable.
 4. `active-task.md` only for multi-phase, risky, approved, or compaction-sensitive work.
-5. `session-log.md` only for noisy investigations or long test/fix loops.
+5. `session-log.md` only for unresolved failures, conflicts, rollbacks,
+   unpromoted corrections, provisional `[REVIEW:<id>]` memories, and sparse
+   phase/interruption checkpoints.
 
 ## Default layout
 
@@ -87,13 +93,16 @@ package before treating the upgrade as reusable on another computer.
 
 1. Read `current-context.md`.
 2. Read the compact routing layer in `index.md`.
-3. Match the current task against strong-relevance keywords, aliases, topics, and module names. Open only the pointed capsules, pressure signals, stable behavior, rejected approaches, and regression guards selected by that match. Do not load unrelated memory just because it exists.
+3. Derive the module, entity, behavior, version, and risk touched by the current
+   action. Match them against strong-relevance keywords, aliases, topics, and
+   scope routes. Follow every matching route to its normative body owners; do
+   not use a top-k cutoff.
 4. Read `active-task.md` if present and not complete.
-5. If the current work is active, noisy, or has many tool calls, read only the
-   recent `session-log.md` tail: roughly 30-60 lines or a few recent Run Audit
-   cards. Never read a long session log in full by default. Search or read an
-   older line range only when the active anchor points to evidence, a conflict
-   appears, or the selected memory is incomplete.
+5. Use roughly 30-60 recent `session-log.md` lines or a few sparse checkpoints
+   only as a recency probe when the work is active or interrupted. This is not
+   a total recall limit. Never read a long session log in full by default.
+   Search or read an older range when an owner points to evidence, a conflict
+   appears, a route misses, or selected memory is incomplete.
 6. Open only the capsules tied to the active version, module, hypothesis, pressure signal, rejected approach, or regression guard.
 7. Build a short activation packet for the current turn: phase, goal, scope, stable behavior, pressure signals, rejected approaches, allowed changes, forbidden changes, test guards, and selected memories.
 8. For long, risky, or multi-step tasks, create or update `active-task.md` before starting execution.
@@ -102,16 +111,19 @@ package before treating the upgrade as reusable on another computer.
    gate: do not begin code edits, state-changing tests, deployment, or a long
    investigation branch until the anchor exists.
 9. After each logical work unit in long/risky work, refresh `active-task.md` with the current step and next exact step before switching focus, running a validation gate, asking for review, or entering interruption risk.
-10. Before a deliberate compaction, restart, or major phase shift, update `current-context.md`, `active-task.md` if present, and the session log.
+10. Before deliberate compaction, restart, or a major phase shift, update
+    `current-context.md` and `active-task.md`, then append one sparse checkpoint
+    only if it adds recovery value.
 11. Keep `current-context.md` short: phase, goal, active constraint, evidence pointers, active-task pointer, and next step. Move durable detail into capsules.
-12. Append time-ordered discovery, decisions, user pressure signals, errors,
-    tests, artifact/model-call reuse decisions, encoding checks, and compact run audit cards
-    to `session-log.md`. Preserve the complete local log; do
-    not delete or rotate older entries merely to reduce recovery context.
-13. Put durable version judgments, rejected approaches, explicit user
-    corrections, pressure-weighted constraints, and stable behavior
-    protections in capsules or the active anchor at write time. Do not rely on
-    a later log search as their only recovery path.
+12. Apply the session-log admission gate before writing. Admit only unresolved
+    failures/conflicts, rollbacks, unpromoted corrections, `[REVIEW:<id>]`
+    bodies whose owner is uncertain, and sparse recovery checkpoints. Routine
+    green work with no new durable delta gets no narrative log body. Preserve
+    all existing bytes; do not delete, rotate, rename, or rewrite old entries.
+13. At durable-memory write time, choose exactly one normative body owner and
+    add a wake-up route in `index.md` with scope, aliases/keywords, owner path,
+    and one short routing reason. Other layers may keep a short ID, provenance,
+    and pointer, but must not mirror the narrative body.
 14. Before promoting one request, pressure phrase, short acknowledgement, local
     failure, or temporary boundary into a durable rule, keep it weak by default:
     task-local or revisable unless the user used explicit absolute wording.
@@ -120,10 +132,37 @@ package before treating the upgrade as reusable on another computer.
     task-local until the user clearly asks to keep them as the new shared way;
     do not maintain a workflow version chain.
 16. Store raw logs separately and link them from the log or capsules instead of pasting them wholesale.
-17. After a session restart or model switch, rebuild the live anchor from
-    `current-context.md`, `active-task.md` if present and active, the recent
-    session-log tail, and relevant capsules before continuing. Retrieve older
-    log evidence only through a targeted search or ranged read.
+17. After a restart or model switch, rebuild the live anchor from
+    `active-task.md`, `current-context.md`, `index.md`, every matched owner, and
+    the recent-log recency probe. Retrieve older evidence by targeted search or
+    range. A miss, alias ambiguity, source conflict, first-time entity touch, or
+    irreversible action requires wider retrieval before claiming no boundary
+    exists.
+
+## Ownership And Reachability Contract
+
+- One durable fact has one normative body owner.
+- `index.md` is the compact owner router; do not create a second owner manifest.
+- Use route entries shaped as `scope: aliases=...; keywords=...; owners=...;
+  mandatory=...; reason=...`. `mandatory` points to touched-scope guard owners
+  that must all be opened.
+- Explicit prohibitions, rejected paths, stable behavior, acceptance criteria,
+  unresolved conflicts, and irreversible-action guards are mandatory recall.
+- A durable write is incomplete until its route exists. When ownership is
+  uncertain, write one `[REVIEW:<id>]` body in `session-log.md` and immediately
+  add a `status=pending-review` route to that exact entry.
+- Use `scripts/route-memory.py` to resolve every matching owner. Use
+  `scripts/check-memory-root.py` to find missing routes, broken pointers,
+  duplicate bodies, or stranded review items.
+
+## First Activation After Upgrade
+
+On the first v0.2.6 activation in an existing legacy memory root, apply
+`automatic-legacy-takeover.md` automatically before the normal activation
+response. This is memory maintenance, not old-task execution. Successful
+takeover changes what future recovery injects, so the next context cleanup or
+compaction can discard old live text and rebuild from compact routes without a
+second user command.
 
 ## Conflict Priority
 
@@ -205,9 +244,10 @@ Keep it short and directive:
 
 The anchor is the current route, not a chronological audit trail. Replace stale
 `Current step`, `Completed`, and `Next exact step` summaries as the route moves;
-do not append one section or bullet set per batch. Chronology stays in the
-append-only session log, while durable corrections, rejected paths, and stable
-boundaries are mirrored into the anchor or capsules.
+do not append one section or bullet set per batch. Durable corrections,
+rejected paths, and stable boundaries get one body owner plus compact route and
+evidence pointers. Only admitted unresolved events or sparse checkpoints go to
+the append-only session log.
 
 After compaction, do not continue from the compacted chat alone. Read
 `active-task.md` first. If it conflicts with the compacted summary, prefer
@@ -244,15 +284,18 @@ after each module group.
 
 - Use `current-context.md` for the active thread state.
 - Use `index.md` only as a compact router across versions and topics: keyword/alias/topic -> pointer + one short routing reason.
-- Keep `session-log.md` as the complete append-only chronology. Recovery reads
-  only its recent tail by default and uses targeted search/ranges for older
-  evidence.
+- Keep old `session-log.md` bytes as immutable local evidence. New writes obey
+  the admission gate; recent lines are only a recency probe and targeted
+  search/ranges retrieve older evidence.
 - Use one capsule per version or one durable topic shift.
 - Split capsules when evidence or hypotheses diverge.
 - Prefer source logs over summaries when facts conflict.
-- If a note becomes durable, promote or mirror it into a capsule or active
-  anchor while preserving the original chronological log entry.
-- For meaningful runs, prefer a compact audit card that preserves next exact step, active anchor, protected modules, repeated failed paths, artifact discipline, encoding check, memory hygiene, and evidence.
+- If a provisional note becomes durable, establish one capsule/domain owner and
+  replace its pending route with the final owner route. Preserve the old log
+  entry only as provenance; do not copy its full body into another live layer.
+- Record compact run-audit fields in the active task or relevant domain owner.
+  Append a session-log card only for an admitted unresolved item or sparse
+  recovery checkpoint.
 - Use pressure signals to lower speed, restate the target, and tighten scope; do not interpret pressure as permission to stop necessary fixes.
 - Treat pressure, short approval, and one-off instructions as memory evidence, not automatic hard law. If the note becomes durable, mark it task-local, revisable, or an explicit hard boundary.
 - Keep negative evidence visible: rejected approaches, old-solution resurrection risks, and regression guards must survive compaction.
@@ -291,10 +334,16 @@ If `active-task.md` exists and is not marked complete, answer one more question:
 - Do not bury history only in the conversation thread.
 - Do not expand the live anchor beyond what can be re-read quickly.
 - Do not let the session log become a second capsule store.
+- Do not log routine green actions merely because tools were called or a work
+  burst ended.
+- Do not copy one durable narrative into current-context, active-task, index,
+  capsule, and session-log. Keep one body and compact pointers.
 - Do not read a long session log in full merely because the current task is
   active, noisy, or interrupted.
 - Do not delete, rotate, summarize away, or irreversibly rewrite the local
   session log as a context-control shortcut.
+- Do not treat the recent 30-60 line probe as a cap on relevant selected
+  memory.
 - Do not let `active-task.md` accumulate per-batch chronology; keep only the
   live route, bounded milestone summary, critical corrections, rejected paths,
   stable boundaries, evidence pointers, and next exact step.

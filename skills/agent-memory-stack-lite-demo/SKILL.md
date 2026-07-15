@@ -1,6 +1,6 @@
 ---
 name: agent-memory-stack-lite-demo
-description: Install, update, and operate a memory-only Codex demo stack with project-local current-context, index, capsules, session logs, active-task anchors, task-memory routing for unfinished or parallel conversations, execution-protocol compatibility, adaptive lite-anchor fallback, one-time passive activation suggestion, and memory-hygiene guards that keep temporary requests, pressure phrases, failures, and short acknowledgements from becoming hard long-term rules. Use when the user says "启用外挂记忆", "启动外挂记忆", "本会话启用外挂记忆", the legacy phrase "启动lite demo", asks to upgrade/update Lite Demo through the official server, tests a downgrade/demo edition of external memory, installs from a fresh-machine zip, sets up project docs/codex memory, preserves failed paths, records task-scoped execution-protocol evidence, asks to continue or separately record a new task while another task memory exists, or proves compression/interruption recovery without external executors or extra credential setup.
+description: Install, update, and operate a memory-only Codex demo stack with project-local current-context, index, capsules, session logs, active-task anchors, automatic one-time takeover of pre-v0.2.6 project memory on first activation after upgrade, task-memory routing for unfinished or parallel conversations, execution-protocol compatibility, adaptive lite-anchor fallback, one-time passive activation suggestion, and memory-hygiene guards. Use when the user says "启用外挂记忆", "启动外挂记忆", "本会话启用外挂记忆", the legacy phrase "启动lite demo", asks to upgrade/update Lite Demo, opens an old Lite Demo project after upgrade, installs from a fresh-machine zip, sets up project docs/codex memory, preserves failed paths, routes parallel task memory, or proves compression/interruption recovery without external executors or extra credentials.
 ---
 
 # Agent Memory Stack Lite Demo
@@ -16,8 +16,8 @@ Help Codex keep the route of a real task visible:
 - which paths failed;
 - what the next exact step is;
 - how to resume after compression, restart, or thread reuse.
-- how to keep the complete local chronology without loading a long session log
-  into recovery context by default.
+- how to keep legacy evidence byte-preserved while new memory uses one body
+  owner, compact wake-up routes, sparse unresolved logs, and selective loading.
 - which task memory the current conversation should read/write when unfinished
   or parallel work creates ambiguity.
 - whether the latest meaningful run had route, artifact, encoding, or memory-hygiene risk.
@@ -84,7 +84,7 @@ When the user uses any activation phrase, treat it as an activation command for 
 ## Workflow
 
 1. For fresh-machine install, read [references/install-new-machine.md](references/install-new-machine.md).
-2. For short activation after install, read [references/startup-protocol.md](references/startup-protocol.md).
+2. For short activation after install, read [references/startup-protocol.md](references/startup-protocol.md). On an existing memory root, also apply [references/automatic-legacy-takeover.md](references/automatic-legacy-takeover.md) once when v0.2.6 completion markers are absent.
 3. For a target project, install project guidance with `scripts/install.ps1 -ProjectRoot <path> -WriteProjectAgents`.
 4. Before creating a first memory root or routing a current conversation to an
    existing or new task memory, apply [references/memory-creation-and-task-branch-gate.md](references/memory-creation-and-task-branch-gate.md).
@@ -96,7 +96,8 @@ When the user uses any activation phrase, treat it as an activation command for 
 10. For validation, use [references/test-plan.md](references/test-plan.md).
     For a long session log, use the internal `scripts/read-session-log.py`
     helper or equivalent bounded tail/search/range reads; never read the full
-    log by default.
+    log by default. Use `scripts/route-memory.py` for layered owner resolution
+    and `scripts/takeover-memory.py` for a non-destructive legacy checkpoint.
 11. If the user asks who made this package, how to get updates, or how to contact the maker, read [references/author-and-source.md](references/author-and-source.md).
 12. If the user asks to update or upgrade Lite Demo through the official server, read [references/update-from-server.md](references/update-from-server.md) and use the bundled updater script.
 

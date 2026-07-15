@@ -23,6 +23,23 @@ Do not treat a local polish package as ready unless:
 - Run Audit narrative notes are optional evidence appendices, not the default required output.
 - 10, 100, and 1000 chronological batches produce a default recovery view of
   at most 60 recent lines while the complete log hash remains unchanged;
+- 10, 100, and 1000 routing entries return every touched-scope body owner and
+  all mandatory guard owners, while unrelated owners remain unloaded;
+- explicit prohibitions, rejected paths, stable behavior, acceptance criteria,
+  unresolved conflicts, and irreversible-action guards achieve 100% recall in
+  deterministic touched-scope fixtures;
+- a route miss and irreversible action request wider retrieval instead of
+  claiming that no historical boundary exists;
+- legacy takeover preserves the recorded byte prefix and SHA256, appends only
+  one same-file checkpoint, and a second takeover is byte-idempotent;
+- first activation detects an old unmarked root and automatically enters
+  memory-only takeover without a second user command or old-task execution;
+- a new v0.2.6 root skips takeover, a legacy no-log root receives one sparse
+  checkpoint, and a broken owner route cannot receive completion markers;
+- successful takeover makes the next `inspect` report `takeover_required:
+  false`; later activation is read-only with respect to migration state;
+- checker warnings cover missing owner routes, broken owner pointers, stranded
+  `[REVIEW]` items, repeated live fields, and long cross-layer narrative copies;
 - an early rejected path remains retrievable through targeted search even when
   it is outside the recent tail;
 - an oversized active task and a long session log produce soft health warnings
@@ -57,6 +74,11 @@ Choose a safe scoped project task and record:
 - whether `启动外挂记忆`, `本会话启用外挂记忆`, and legacy `启动lite demo` activate memory without requiring the long setup prompt;
 - whether installation exposes only one public skill and no extra memory-skill install target;
 - whether activation-only input avoids command execution, service startup, tests, code edits, and old-task auto-resume;
+- whether activation-only input permits exactly one old-user exception: automatic
+  maintenance inside an unmarked legacy memory root, with no business-file
+  edits, project tests, service startup, or old-task execution;
+- whether old users need no second migration command and receive a short result
+  explaining that the next context cleanup/compaction uses the new routes;
 - whether a no-memory project gets at most one plain activation suggestion after 2-3 meaningful rounds or clear complexity signals;
 - whether refusal creates no `docs/codex/`, no AGENTS state, no stored refusal marker, and causes current-session-only skip;
 - whether later explicit `启用外挂记忆` or `启动外挂记忆` overrides the current-session skip;
@@ -87,16 +109,24 @@ Choose a safe scoped project task and record:
 - whether reusable workflow adjustments stay task-local until the user clearly asks to keep them as the new shared way;
 - whether a new complex task line used a same-root task branch anchor instead of a second memory database;
 - whether the compact routing index matched strong-relevance terms and opened only related capsules;
-- whether index entries stayed as keyword/alias/topic -> pointer + one short reason instead of copying capsule detail;
+- whether index entries stayed as scope/alias/keyword -> body owner + mandatory
+  guard owners + one short reason instead of copying body detail;
+- whether each durable write chose one normative body owner and received a
+  wake-up route in the same work unit;
+- whether every mandatory touched-scope guard owner was opened, without top-k;
 - whether selected task-relevant memory was retained even when detailed, while unrelated capsules and session history stayed unloaded;
 - whether a long session log was preserved unchanged while default recovery
-  read only roughly 30-60 recent lines or a few audit cards;
+  used roughly 30-60 recent lines or a few sparse checkpoints only as a recency
+  probe rather than a total recall limit;
 - whether older log evidence was opened only by targeted search or a bounded
   range when the anchor pointed to it, sources conflicted, or information was
   missing;
 - whether active-task kept only the current route, bounded milestone summary,
   critical corrections/rejected paths/stable boundaries, evidence pointers,
   and next exact step instead of per-batch chronology;
+- whether session-log admitted only unresolved failures/conflicts, rollbacks,
+  unpromoted corrections, provisional `[REVIEW]` bodies, and sparse
+  checkpoints, with no routine green narrative;
 - whether ordinary user replies avoided `ExecutionPolicy`, capsule, anchor, fingerprint, and routing-index terminology;
 - failed path recorded;
 - next exact step recorded;
@@ -146,8 +176,8 @@ Compare:
 - Existing artifacts are preferred over repeated network/API/model calls unless stale, invalid, missing, or explicitly regenerated by the user.
 - Chinese memory/log/UI text remains UTF-8-readable; sentinel phrases such as `启用外挂记忆`, `启动外挂记忆`, `稳定模块保护判断`, and `确认固化` are not mojibake.
 - Failed paths are visible and not retried casually.
-- Complete local chronological memory remains available while ordinary
-  recovery context stays bounded to the recent tail and selected evidence.
+- Legacy local evidence remains byte-preserved while new memory uses sparse
+  log admission, one body owner, compact routes, and selected evidence.
 
 ## Fail Signals
 

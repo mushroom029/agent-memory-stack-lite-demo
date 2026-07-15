@@ -115,14 +115,14 @@ explanations, and do not replace every "我" with the skill name.
 
 1. `current-context.md`
 2. `index.md`
-3. Use `index.md` to identify relevant module, pressure, stable-behavior,
-   rejected-approach, and regression-guard keywords.
+3. Derive the touched module/entity/behavior/version/risk, then use `index.md`
+   to resolve every matching `owners=` and `mandatory=` pointer. Do not stop at
+   a top-k subset.
 4. `active-task.md` if present and not marked complete
-5. The most recent 30-60 lines or a few recent audit cards from
-   `session-log.md` if the current work is active, noisy, or has many tool
-   calls; never the full long log by default
-6. Only the capsules relevant to the current version, module, hypothesis,
-   pressure signal, rejected approach, or failure
+5. Every matched owner, with mandatory guard owners opened first
+6. The most recent 30-60 `session-log.md` lines or a few sparse checkpoints as
+   a recency probe; this is not a cap on selected relevant memory and never
+   means reading a long log in full by default
 
 If `active-task.md` exists but is marked complete, treat it as archived evidence.
 Do not resume from its `Next exact step` or `Resume instruction`.
@@ -144,23 +144,24 @@ that task's own `active-task.md`.
    entering interruption risk. For rapid edit bursts, use the batching rule in
    `SKILL.md`'s Compaction Interruption Gate.
 3. Update `current-context.md` before deliberate compaction or a major phase shift.
-4. Update `session-log.md` with the latest actions, pressure signals, errors,
-   and tests if the work is still active.
-5. Add or update the relevant capsule, including rejected approaches and
-   regression guards when they become durable.
-6. Refresh `index.md` if navigation, project phase, module protection,
-   pressure signals, rejected approaches, or guards changed.
+4. Choose one body owner for each durable fact and update it once.
+5. Refresh `index.md` with a compact scope/alias/keyword -> owner route. A
+   durable write is incomplete until this wake-up route exists.
+6. Append to `session-log.md` only for an unresolved failure/conflict,
+   rollback, unpromoted correction, `[REVIEW:<id>]` provisional body, or sparse
+   recovery checkpoint. Routine green work receives no narrative entry.
 
 ## Resume order after interruption
 
 1. Read `active-task.md` first if it exists and is not complete.
 2. Read `current-context.md`.
 3. Read `index.md`.
-4. Read the recent `session-log.md` tail and relevant capsules. Search or read
-   a bounded older range only when the anchor points to evidence, a conflict
-   appears, or information is missing.
-5. Build an activation packet from selected index entries and capsules.
-6. Compare the intended next action with `active-task.md`; continue only if it
+4. Resolve the touched scope through `index.md` and open every matched owner.
+5. Use the recent `session-log.md` tail only as a recency probe. Search or read
+   a bounded older range when an owner points to evidence, a route misses, a
+   conflict appears, or information is missing.
+6. Build an activation packet from the selected owners and compact routes.
+7. Compare the intended next action with `active-task.md`; continue only if it
    matches or the user has given a newer instruction.
 
 If `active-task.md` is present but complete, skip it for routing and use it only
@@ -186,12 +187,20 @@ operations for older evidence. These reads must not modify the append-only log.
   approaches can be retrieved by task scope.
 - Use module aliases in `index.md` when users and agents refer to the same area
   by different names.
+- Give each durable body a stable `Memory ID`, `Memory class`, `Scope`, and
+  `Wake-up route`. Other files keep pointers rather than copied prose.
 
 ## Validation helper
 
-Run `scripts/check-memory-root.py <memory-root>` to check for missing required
-files, missing active next steps, broken capsule references, and weak
-stabilization metadata.
+Run `scripts/route-memory.py <memory-root> --touch <action>` to resolve matching
+owners. Run `scripts/check-memory-root.py <memory-root>` to check missing
+routes/owners, broken pointers, stranded review entries, repeated live fields,
+cross-layer narrative duplication, and weak stabilization metadata.
+
+For a legacy root, run `scripts/takeover-memory.py inspect <memory-root>`, then
+`apply`, then `verify`. The helper records the old byte length and prefix SHA256
+and appends one idempotent v0.2.6 checkpoint to the same `session-log.md`. It
+must not rename, rotate, or rewrite the old log.
 
 ## Index recovery
 
