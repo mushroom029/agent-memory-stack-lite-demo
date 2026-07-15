@@ -19,6 +19,8 @@ SECRET_PATTERNS = (
 CURRENT_CONTEXT_SOFT_CHARS = 8_000
 ROUTING_INDEX_SOFT_CHARS = 12_000
 ROUTING_LINE_SOFT_CHARS = 800
+ACTIVE_TASK_SOFT_CHARS = 16_000
+SESSION_LOG_TAIL_ONLY_LINES = 240
 
 
 def read_text(path: Path) -> str:
@@ -80,6 +82,7 @@ def validate(root: Path) -> tuple[list[str], list[str]]:
     current_text = read_text(current) if current.exists() else ""
     index_text = read_text(index) if index.exists() else ""
     active_text = read_text(active_task) if active_task.exists() else ""
+    session_text = read_text(session_log) if session_log.exists() else ""
 
     if len(current_text) > CURRENT_CONTEXT_SOFT_CHARS:
         warnings.append(
@@ -91,6 +94,15 @@ def validate(root: Path) -> tuple[list[str], list[str]]:
         )
     if any(len(line) > ROUTING_LINE_SOFT_CHARS for line in index_text.splitlines()):
         warnings.append("index.md has a long routing entry that may contain capsule detail")
+
+    if len(active_text) > ACTIVE_TASK_SOFT_CHARS:
+        warnings.append(
+            "active-task.md is large and may be carrying chronology; keep the current route, critical corrections, rejected paths, stable boundaries, evidence pointers, and next exact step"
+        )
+    if len(session_text.splitlines()) > SESSION_LOG_TAIL_ONLY_LINES:
+        warnings.append(
+            "session-log.md is long; preserve the complete local log but use only a recent tail or targeted search/range for recovery"
+        )
 
     if active_task.exists() and is_active_task(active_text):
         if not has_field_value(active_text, ("next exact step",)):

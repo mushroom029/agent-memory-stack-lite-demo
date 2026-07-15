@@ -22,7 +22,7 @@ If Lite Demo was first installed from GitHub with these exact skill paths, use t
 https://github.com/mushroom029/agent-memory-stack-lite-demo/tree/main/skills/agent-memory-stack-lite-demo
 ```
 
-Do not ask the user to install a separate memory skill. In v0.2.1 and later, the memory workflow is internal to `agent-memory-stack-lite-demo`.
+Do not add extra memory-skill installation steps. In v0.2.1 and later, the memory workflow is internal to `agent-memory-stack-lite-demo`.
 
 GitHub direct install is only an initial install source. It installs the same
 skill directory and updater, but it does not itself execute the zip package's

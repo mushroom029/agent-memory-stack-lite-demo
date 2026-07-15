@@ -44,5 +44,5 @@ If the user includes a concrete task in the same message, for example `启用外
 - Do not hide file writes; report the memory path and purpose.
 - Do not treat the word `启动` inside the legacy phrase as permission to start a local service.
 - Do not rescan every turn for other protocols; reuse the active task's policy until a recheck trigger appears.
-- Do not ask the user to install or activate a second memory skill.
+- Use Lite Demo's internal memory workflow; do not add extra install or activation steps.
 - Do not expose `ExecutionPolicy`, capsule, anchor, fingerprint, or routing-index terminology in ordinary user replies.

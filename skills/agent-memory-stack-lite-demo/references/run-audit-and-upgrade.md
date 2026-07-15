@@ -10,9 +10,14 @@ observe -> audit note -> upgrade candidate -> human or maintainer judgment -> pa
 
 ## Where To Record
 
-Use `docs/codex/session-log.md` for chronological notes.
+Use `docs/codex/session-log.md` for append-only chronological notes. Recovery
+reads only the recent tail by default; older evidence is retrieved through a
+targeted search or bounded line range.
 
-Promote only durable lessons into `docs/codex/capsules/`.
+Promote only durable lessons into `docs/codex/capsules/` without removing their
+original chronological log entries. Mirror explicit corrections, rejected
+paths, and stable boundaries at write time rather than depending on a future
+full-log read.
 
 ## Run Audit Card
 

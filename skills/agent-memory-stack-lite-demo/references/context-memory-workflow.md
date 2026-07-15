@@ -89,7 +89,11 @@ package before treating the upgrade as reusable on another computer.
 2. Read the compact routing layer in `index.md`.
 3. Match the current task against strong-relevance keywords, aliases, topics, and module names. Open only the pointed capsules, pressure signals, stable behavior, rejected approaches, and regression guards selected by that match. Do not load unrelated memory just because it exists.
 4. Read `active-task.md` if present and not complete.
-5. Read `session-log.md` if the current work is active, noisy, or has many tool calls.
+5. If the current work is active, noisy, or has many tool calls, read only the
+   recent `session-log.md` tail: roughly 30-60 lines or a few recent Run Audit
+   cards. Never read a long session log in full by default. Search or read an
+   older line range only when the active anchor points to evidence, a conflict
+   appears, or the selected memory is incomplete.
 6. Open only the capsules tied to the active version, module, hypothesis, pressure signal, rejected approach, or regression guard.
 7. Build a short activation packet for the current turn: phase, goal, scope, stable behavior, pressure signals, rejected approaches, allowed changes, forbidden changes, test guards, and selected memories.
 8. For long, risky, or multi-step tasks, create or update `active-task.md` before starting execution.
@@ -100,8 +104,14 @@ package before treating the upgrade as reusable on another computer.
 9. After each logical work unit in long/risky work, refresh `active-task.md` with the current step and next exact step before switching focus, running a validation gate, asking for review, or entering interruption risk.
 10. Before a deliberate compaction, restart, or major phase shift, update `current-context.md`, `active-task.md` if present, and the session log.
 11. Keep `current-context.md` short: phase, goal, active constraint, evidence pointers, active-task pointer, and next step. Move durable detail into capsules.
-12. Record time-ordered discovery, decisions, user pressure signals, errors, tests, artifact/model-call reuse decisions, encoding checks, and compact run audit cards in `session-log.md`; promote stable conclusions into capsules.
-13. Put durable version judgments, rejected approaches, pressure-weighted constraints, and stable behavior protections in capsules; do not keep them only in chat.
+12. Append time-ordered discovery, decisions, user pressure signals, errors,
+    tests, artifact/model-call reuse decisions, encoding checks, and compact run audit cards
+    to `session-log.md`. Preserve the complete local log; do
+    not delete or rotate older entries merely to reduce recovery context.
+13. Put durable version judgments, rejected approaches, explicit user
+    corrections, pressure-weighted constraints, and stable behavior
+    protections in capsules or the active anchor at write time. Do not rely on
+    a later log search as their only recovery path.
 14. Before promoting one request, pressure phrase, short acknowledgement, local
     failure, or temporary boundary into a durable rule, keep it weak by default:
     task-local or revisable unless the user used explicit absolute wording.
@@ -110,7 +120,10 @@ package before treating the upgrade as reusable on another computer.
     task-local until the user clearly asks to keep them as the new shared way;
     do not maintain a workflow version chain.
 16. Store raw logs separately and link them from the log or capsules instead of pasting them wholesale.
-17. After a session restart or model switch, rebuild the live anchor from `current-context.md`, `active-task.md` if present and active, the session log, and relevant capsules before continuing.
+17. After a session restart or model switch, rebuild the live anchor from
+    `current-context.md`, `active-task.md` if present and active, the recent
+    session-log tail, and relevant capsules before continuing. Retrieve older
+    log evidence only through a targeted search or ranged read.
 
 ## Conflict Priority
 
@@ -184,11 +197,17 @@ Keep it short and directive:
 - activation packet;
 - allowed and forbidden changes;
 - current step;
-- completed steps;
+- a bounded completed-milestone summary and evidence pointers;
 - next exact step;
 - validation gates;
 - rollback/backup path if any;
 - explicit non-goals and "do not touch" items.
+
+The anchor is the current route, not a chronological audit trail. Replace stale
+`Current step`, `Completed`, and `Next exact step` summaries as the route moves;
+do not append one section or bullet set per batch. Chronology stays in the
+append-only session log, while durable corrections, rejected paths, and stable
+boundaries are mirrored into the anchor or capsules.
 
 After compaction, do not continue from the compacted chat alone. Read
 `active-task.md` first. If it conflicts with the compacted summary, prefer
@@ -225,11 +244,14 @@ after each module group.
 
 - Use `current-context.md` for the active thread state.
 - Use `index.md` only as a compact router across versions and topics: keyword/alias/topic -> pointer + one short routing reason.
-- Use `session-log.md` for chronological actions, errors, and test results during active work.
+- Keep `session-log.md` as the complete append-only chronology. Recovery reads
+  only its recent tail by default and uses targeted search/ranges for older
+  evidence.
 - Use one capsule per version or one durable topic shift.
 - Split capsules when evidence or hypotheses diverge.
 - Prefer source logs over summaries when facts conflict.
-- If a note becomes durable, move it from the session log into a capsule and leave only the pointer behind.
+- If a note becomes durable, promote or mirror it into a capsule or active
+  anchor while preserving the original chronological log entry.
 - For meaningful runs, prefer a compact audit card that preserves next exact step, active anchor, protected modules, repeated failed paths, artifact discipline, encoding check, memory hygiene, and evidence.
 - Use pressure signals to lower speed, restate the target, and tighten scope; do not interpret pressure as permission to stop necessary fixes.
 - Treat pressure, short approval, and one-off instructions as memory evidence, not automatic hard law. If the note becomes durable, mark it task-local, revisable, or an explicit hard boundary.
@@ -269,6 +291,13 @@ If `active-task.md` exists and is not marked complete, answer one more question:
 - Do not bury history only in the conversation thread.
 - Do not expand the live anchor beyond what can be re-read quickly.
 - Do not let the session log become a second capsule store.
+- Do not read a long session log in full merely because the current task is
+  active, noisy, or interrupted.
+- Do not delete, rotate, summarize away, or irreversibly rewrite the local
+  session log as a context-control shortcut.
+- Do not let `active-task.md` accumulate per-batch chronology; keep only the
+  live route, bounded milestone summary, critical corrections, rejected paths,
+  stable boundaries, evidence pointers, and next exact step.
 - Do not let `AGENTS.md` or `CODEX_GUIDANCE.md` become a second project memory
   store; keep it as short operating guidance that points to the memory index.
 - Do not turn skill upgrade history into another memory log; keep only durable

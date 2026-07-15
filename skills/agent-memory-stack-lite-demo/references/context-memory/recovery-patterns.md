@@ -25,8 +25,25 @@ or the discovered project memory root's `session-log.md`, when:
   the burst ends. End the burst and refresh after errors, test failures, user
   feedback, module switches, deployment, or rollback.
 - After a phase shift or deliberate compaction warning, sync `current-context.md` first, then `active-task.md` if present, then the log.
-- When `session-log.md` grows beyond roughly 60 lines, move older stable entries
-  into a dated capsule or capsule stub and leave a pointer in the log.
+- Keep `session-log.md` append-only. A long log is cold local memory, not a
+  default recovery payload. Do not delete, rotate, or rewrite older entries
+  merely because the file grew.
+
+## Recovery read policy
+
+- Start with roughly the most recent 30-60 lines or a few recent Run Audit
+  cards.
+- Never read a long `session-log.md` in full by default.
+- Read older content only through a targeted keyword search or a bounded line
+  range when `active-task.md` points to evidence, sources conflict, or required
+  information is missing.
+- A search miss is a reason to refine the query or inspect a bounded range, not
+  a reason to discard the full local log.
+- Mirror explicit user corrections, rejected approaches, and stable boundaries
+  into the active anchor or a capsule when they are written, so a retrieval
+  miss cannot silently resurrect a rejected route.
+- The internal `scripts/read-session-log.py` helper provides a 60-line default
+  tail plus explicit search/range modes without modifying the source log.
 
 ## Mid-task compaction guard
 
@@ -34,7 +51,9 @@ For long approved tasks, write `active-task.md` before execution begins. This is
 the recovery anchor if the thread compacts mid-run.
 
 The file should say the last approved route, exact next step, validation gates,
-and non-goals. Keep it small. It is not a log; it is a route marker.
+critical user corrections, rejected paths, stable boundaries, evidence
+pointers, and non-goals. Keep it small. It is not a log; replace stale progress
+summaries instead of appending one history block per batch.
 
 Because system compaction can happen without warning, do not rely on a final
 "before compaction" save. Keep the route marker current during execution. Any
@@ -81,7 +100,8 @@ capsule.
 - Move stable conclusions, rejected hypotheses, and durable version judgments into capsules.
 - Move repeated pressure signals, disproven approaches, and do-not-resurrect
   decisions into capsules.
-- Keep the session log as recent history, not as the archive.
+- Keep the full session log as cold chronological history. Default recovery
+  still reads only the recent tail.
 - Leave raw logs, screenshots, and traces in separate files and link to them.
 
 ## Reboot check

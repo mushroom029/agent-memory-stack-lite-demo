@@ -88,7 +88,7 @@
 - Pressure signals:
 - Rejected approaches:
 - Current step:
-- Completed:
+- Completed: # bounded milestone summary/evidence pointers, not chronology
 - Next exact step: # use "None; task complete" when Status is complete
 - Validation gates:
 - Regression guards:

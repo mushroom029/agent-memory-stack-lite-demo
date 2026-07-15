@@ -118,7 +118,9 @@ explanations, and do not replace every "我" with the skill name.
 3. Use `index.md` to identify relevant module, pressure, stable-behavior,
    rejected-approach, and regression-guard keywords.
 4. `active-task.md` if present and not marked complete
-5. `session-log.md` if the current work is active, noisy, or has many tool calls
+5. The most recent 30-60 lines or a few recent audit cards from
+   `session-log.md` if the current work is active, noisy, or has many tool
+   calls; never the full long log by default
 6. Only the capsules relevant to the current version, module, hypothesis,
    pressure signal, rejected approach, or failure
 
@@ -154,7 +156,9 @@ that task's own `active-task.md`.
 1. Read `active-task.md` first if it exists and is not complete.
 2. Read `current-context.md`.
 3. Read `index.md`.
-4. Read `session-log.md` and relevant capsules.
+4. Read the recent `session-log.md` tail and relevant capsules. Search or read
+   a bounded older range only when the anchor points to evidence, a conflict
+   appears, or information is missing.
 5. Build an activation packet from selected index entries and capsules.
 6. Compare the intended next action with `active-task.md`; continue only if it
    matches or the user has given a newer instruction.
@@ -167,6 +171,11 @@ shows an unfinished task, reconstruct a new `active-task.md` from those files
 before continuing. When the reconstructed route is uncertain or conflicts with
 the newest user message, ask or revise the anchor before touching code, server
 state, or generated artifacts.
+
+The reconstruction starts from `current-context.md`, the recent log tail, and
+indexed capsules. Never read a long session log in full by default. Use the
+internal `scripts/read-session-log.py` helper or equivalent tail/search/range
+operations for older evidence. These reads must not modify the append-only log.
 
 ## Naming
 

@@ -16,6 +16,8 @@ Help Codex keep the route of a real task visible:
 - which paths failed;
 - what the next exact step is;
 - how to resume after compression, restart, or thread reuse.
+- how to keep the complete local chronology without loading a long session log
+  into recovery context by default.
 - which task memory the current conversation should read/write when unfinished
   or parallel work creates ambiguity.
 - whether the latest meaningful run had route, artifact, encoding, or memory-hygiene risk.
@@ -63,9 +65,9 @@ recovery workflow is bundled as internal references under this skill:
 - [references/context-memory/project-stages-and-risk.md](references/context-memory/project-stages-and-risk.md)
 - [references/context-memory/activation-packet-template.md](references/context-memory/activation-packet-template.md)
 
-Do not ask users to install, enable, or understand a separate memory skill.
-Do not expose it as a second skill, GitHub install path, activation target, or
-fallback plan.
+Use the bundled memory workflow only through this skill.
+Do not expose internal references as extra GitHub install paths, activation
+targets, or fallback plans.
 
 ## Activation phrases
 
@@ -92,6 +94,9 @@ When the user uses any activation phrase, treat it as an activation command for 
 8. When touching Chinese text, UTF-8 files, JSON, Markdown, YAML, TOML, or logs, apply [references/encoding-discipline.md](references/encoding-discipline.md).
 9. After a meaningful run, user correction, repeated failure, or smoke test, use [references/run-audit-and-upgrade.md](references/run-audit-and-upgrade.md).
 10. For validation, use [references/test-plan.md](references/test-plan.md).
+    For a long session log, use the internal `scripts/read-session-log.py`
+    helper or equivalent bounded tail/search/range reads; never read the full
+    log by default.
 11. If the user asks who made this package, how to get updates, or how to contact the maker, read [references/author-and-source.md](references/author-and-source.md).
 12. If the user asks to update or upgrade Lite Demo through the official server, read [references/update-from-server.md](references/update-from-server.md) and use the bundled updater script.
 

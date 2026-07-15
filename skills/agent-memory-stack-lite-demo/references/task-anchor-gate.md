@@ -40,6 +40,12 @@ The anchor must include:
 - validation gates;
 - rejected paths or failed approaches that should not be retried.
 
+Keep the anchor bounded and directive. It owns the current goal, current and
+next exact step, critical user corrections, rejected paths, stable boundaries,
+and evidence pointers. It does not own per-batch chronology. On refresh,
+replace stale progress summaries rather than appending another dated or
+batch-by-batch history block; preserve chronology in `session-log.md`.
+
 Before rerunning a network call, paid model call, crawl, or expensive generator,
 check whether an existing artifact already answers the need. Prefer the existing
 artifact unless it is stale, invalid, missing, or the user explicitly asks to
