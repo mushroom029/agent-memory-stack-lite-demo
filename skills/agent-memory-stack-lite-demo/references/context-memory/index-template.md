@@ -20,6 +20,10 @@ Use this as the navigation file for durable context.
   - <scope>: aliases=<user and code terms>; keywords=<strong terms>; owners=<current body paths>; mandatory=<current guard paths or none>; history=routes/<scope>-history.md or none; reason=<one short routing reason>
 - Pending review:
   - <review-id>: aliases=<terms>; keywords=<terms>; owners=session-log.md#REVIEW:<review-id>; mandatory=none; history=none; status=pending-review; reason=owner not settled yet
+    (when the owner settles: point owners= at the real owner, drop status=pending-review, then run `takeover-memory.py discharge` so the in-log body leaves the live log)
+- Settled in-flight entry:
+  - <id>: entry=<TYPE:id>; aliases=<terms>; keywords=<terms>; owners=<real owner>; mandatory=<guard or none>; history=none; status=<recognized settled owner/guard/resolved/promoted/superseded status>; reason=<why the entry is resolved or promoted>
+    (copy the exact `TYPE:id` from the session-log heading into `entry=` before running discharge; legacy bare review IDs remain accepted)
 - Capsules:
   - C13: <short label>
   - C14: <short label>

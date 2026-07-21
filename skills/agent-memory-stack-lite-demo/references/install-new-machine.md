@@ -11,7 +11,7 @@ The folder <folder-path> contains an Agent Memory Stack Lite Demo skill zip. Ins
 ## Expected steps
 
 1. Find the newest matching zip in the folder.
-2. Extract it to `.agent-memory-stack-lite-demo-bootstrap`.
+2. Extract it to a short temporary bootstrap directory.
 3. Run the package checker.
 4. Install the bundled Lite Demo skill with global AGENTS guidance.
 5. If a project path is provided, install project AGENTS guidance and starter `docs/codex` memory.

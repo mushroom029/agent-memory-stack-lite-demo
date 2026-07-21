@@ -12,7 +12,12 @@ Use a project-local context workspace that separates active state from durable h
     ├── index.md
     ├── routes/                      # one-level cold version/event route pages
     ├── active-task.md   # optional, for long/risky tasks in progress
-    ├── session-log.md   # sparse initialization/takeover proof plus admitted items
+    ├── session-log.md   # in-flight queue: unresolved/unhomed items only
+    ├── .takeover-checkpoint # standalone takeover proof (protects the legacy prefix)
+    ├── legacy-destinations.md # optional, required after takeover when old history is meaningful
+    ├── legacy/          # byte-preserved imports and session-log exits
+    │   ├── session-log-discharged.md
+    │   └── session-log-archive.md
     ├── tasks/           # optional, parallel task anchors
     │   └── <task-id>/active-task.md
     └── capsules/
@@ -32,7 +37,12 @@ docs/codex/
 ├── index.md
 ├── routes/          # optional one-level cold version/event route pages
 ├── active-task.md   # optional, for long/risky tasks in progress
-├── session-log.md   # sparse initialization/takeover proof plus admitted items
+├── session-log.md   # in-flight queue: unresolved/unhomed items only
+├── .takeover-checkpoint # standalone takeover proof (protects the legacy prefix)
+├── legacy-destinations.md # optional, required after takeover when old history is meaningful
+├── legacy/          # byte-preserved imports and session-log exits
+│   ├── session-log-discharged.md
+│   └── session-log-archive.md
 ├── tasks/           # optional, parallel task anchors
 │   └── <task-id>/active-task.md
 └── capsules/
@@ -115,18 +125,17 @@ explanations, and do not replace every "我" with the skill name.
 
 ## Read order
 
-1. `current-context.md`
-2. `index.md`
-3. Derive the touched module/entity/behavior/version/risk, then use `index.md`
+1. `active-task.md` if present and not marked complete
+2. `current-context.md`
+3. `index.md`
+4. Derive the touched module/entity/behavior/version/risk, then use `index.md`
    to resolve every matching current `owners=` and `mandatory=` pointer. If a
    matched route has `history=`, scan that one route page and open only its
    precisely matched version/event owners. Do not stop at a top-k subset.
-4. `active-task.md` if present and not marked complete
 5. Every matched current and historical owner, with mandatory guard owners
    opened first
-6. The most recent 30-60 `session-log.md` lines or a few sparse checkpoints as
-   a recency probe; this is not a cap on selected relevant memory and never
-   means reading a long log in full by default
+6. A targeted `session-log.md` ID/range only when an exact unresolved route,
+   source conflict, or evidence gap requires it; never a default tail or full log
 
 If `active-task.md` exists but is marked complete, treat it as archived evidence.
 Do not resume from its `Next exact step` or `Resume instruction`.
@@ -162,9 +171,9 @@ that task's own `active-task.md`.
 2. Read `current-context.md`.
 3. Read `index.md`.
 4. Resolve the touched scope through `index.md` and open every matched owner.
-5. Use the recent `session-log.md` tail only as a recency probe. Search or read
-   a bounded older range when an owner points to evidence, a route misses, a
-   conflict appears, or information is missing.
+5. Read `session-log.md` only when an exact unresolved route selects an entry,
+   sources conflict, or selected owners leave an evidence gap. Use an ID search
+   or bounded range; never inject a default tail.
 6. Build an activation packet from the selected owners and compact routes.
 7. Compare the intended next action with `active-task.md`; continue only if it
    matches or the user has given a newer instruction.
@@ -178,10 +187,11 @@ before continuing. When the reconstructed route is uncertain or conflicts with
 the newest user message, ask or revise the anchor before touching code, server
 state, or generated artifacts.
 
-The reconstruction starts from `current-context.md`, the recent log tail, and
-indexed capsules. Never read a long session log in full by default. Use the
-internal `scripts/read-session-log.py` helper or equivalent tail/search/range
-operations for older evidence. These reads must not modify the append-only log.
+The reconstruction starts from `current-context.md`, `index.md`, and indexed
+owners. Read `session-log.md` only for an exact unresolved route, source
+conflict, or evidence gap. Use the internal `scripts/read-session-log.py`
+helper or equivalent bounded search/range operations. These reads must not
+modify the helper-managed log.
 
 ## Naming
 
@@ -205,8 +215,11 @@ cross-layer narrative duplication, and weak stabilization metadata.
 
 For an existing root, run `scripts/takeover-memory.py inspect <memory-root>`,
 then `apply`, then `verify`. The helper records the old byte length and prefix
-SHA256 and appends one idempotent current-version checkpoint to the same
-`session-log.md`. It
+SHA256 and writes one idempotent current-version checkpoint to the standalone
+`.takeover-checkpoint` file; the legacy prefix it protects stays inside
+`session-log.md`, byte-preserved. A pre-v0.2.13 root whose checkpoint still
+sits inside `session-log.md` keeps verifying unchanged; `migrate` moves the
+metadata to the standalone file without touching the log bytes. It
 must not rename, rotate, or rewrite the old log.
 
 ## Index recovery

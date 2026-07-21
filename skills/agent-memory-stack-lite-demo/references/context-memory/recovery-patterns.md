@@ -13,6 +13,14 @@ or the discovered project memory root's `session-log.md`, only when:
   pending index route is required.
 - A phase boundary or interruption needs one sparse recovery checkpoint.
 
+Every admitted structured in-flight entry is temporary. Its two exit doors: it
+gets resolved, or it gets promoted to a settled owner. Give it a route with
+exact `entry=TYPE:id` identity, a real owner, and a helper-recognized settled
+status, then run
+`takeover-memory.py discharge`; the entry moves byte-preserved into
+`legacy/session-log-discharged.md`. Legacy bare IDs remain accepted for
+`[REVIEW]`. Entries without exact settlement evidence stay live.
+
 ## Update cadence
 
 - Do not write by tool-call count, elapsed work burst, or successful test count.
@@ -21,34 +29,44 @@ or the discovered project memory root's `session-log.md`, only when:
   affected module, rejected behavior, inferred constraint, recurrence, and
   required agent behavior.
 - After each logical work unit in long/risky work, refresh `active-task.md`
-  `Current step`, `Completed`, and `Next exact step` before switching focus,
-  running tests, requesting review, or entering interruption risk.
+  `Current step`, `Progress boundary`, and `Next exact step` before switching
+  focus, running tests, requesting review, or entering interruption risk.
+  Refresh means replace the stale value, never append another interval or
+  validator name to a growing list.
 - For rapid edit bursts in one module, batch `active-task.md` refreshes until
   the burst ends. End the burst and refresh after errors, test failures, user
   feedback, module switches, deployment, or rollback.
 - After a phase shift or deliberate compaction warning, sync `current-context.md`
   and `active-task.md`, then append one sparse checkpoint only if those pointers
   do not already make recovery clear.
-- Keep `session-log.md` append-only. A long log is cold local memory, not a
-  default recovery payload. Do not delete, rotate, or rewrite older entries
-  merely because the file grew.
+- Agents only append admitted entries to `session-log.md`; they never delete or
+  rewrite older entries by hand. Two helpers own the exits:
+  `takeover-memory.py discharge` moves settled structured in-flight entries byte-preserved into
+  `legacy/session-log-discharged.md` once their index route settles, and
+  `takeover-memory.py roll` moves the oldest whole free-region entries
+  byte-preserved into `legacy/session-log-archive.md` if the log ever grows
+  past its line budget (a safety bound, not the primary mechanism). Archived
+  and discharged entries are cold local memory, not a default recovery
+  payload.
 
 ## Recovery read policy
 
-- Start with roughly the most recent 30-60 lines or a few sparse checkpoints as
-  a recency probe, never as the total recall budget.
-- Never read a long `session-log.md` in full by default.
-- Read older content only through a targeted keyword search or a bounded line
-  range when `active-task.md` points to evidence, sources conflict, or required
-  information is missing.
+- Start with `active-task.md`, `current-context.md`, `index.md`, and every
+  matched owner and mandatory guard.
+- Read `session-log.md` only when an exact unresolved route selects an entry,
+  sources conflict, or selected owners still leave an evidence gap.
+- Use an ID search or bounded line range. Never inject a default tail or read a
+  long `session-log.md` in full by default.
 - A search miss, alias ambiguity, source conflict, first-time entity touch, or
   irreversible action is a reason to widen retrieval, not proof that no
   historical boundary exists.
 - Give explicit corrections, rejected approaches, and stable boundaries one
   body owner plus a compact index route when written. Do not mirror their full
   narrative into every layer.
-- The internal `scripts/read-session-log.py` helper provides a 60-line default
-  tail plus explicit search/range modes without modifying the source log.
+- The internal `scripts/read-session-log.py` helper provides bounded
+  tail/search/range modes without modifying the source log. Tail mode is a
+  safety tool after the log has been deliberately selected, not an activation
+  default.
 
 ## Mid-task compaction guard
 
@@ -106,7 +124,7 @@ capsule.
 - Move repeated pressure signals, disproven approaches, and do-not-resurrect
   decisions into capsules.
 - Keep all old session-log bytes as cold evidence. New entries still obey the
-  admission gate, and default recovery uses only the recency probe.
+  admission gate, and default recovery uses compact routes and selected owners.
 - Leave raw logs, screenshots, and traces in separate files and link to them.
 
 ## Reboot check

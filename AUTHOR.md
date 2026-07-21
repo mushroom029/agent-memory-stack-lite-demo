@@ -4,15 +4,8 @@
 - 抖音名：OCD强迫者
 - 抖音号：38439195984
 - QQ：327031882
-- skill 交流群：1094649041
 
 ## 官方获取方式
-
-短链页面：
-
-```text
-https://159.75.127.201/lite/
-```
 
 固定官方更新源：
 
@@ -20,7 +13,13 @@ https://159.75.127.201/lite/
 https://159.75.127.201/agent-memory-stack/lite-demo/latest.json
 ```
 
-请以作者在抖音、QQ、skill 交流群，以及上述官方页面和更新源发布的信息为准。
+公开发布目录：
+
+```text
+https://159.75.127.201/agent-memory-stack/lite-demo/
+```
+
+请以作者在抖音或 QQ 发布的入口、以及上述官方更新源为准。
 
 ## 使用入口
 
@@ -28,6 +27,12 @@ https://159.75.127.201/agent-memory-stack/lite-demo/latest.json
 
 ```text
 启用外挂记忆
+```
+
+也可以说：
+
+```text
+启动外挂记忆
 ```
 
 兼容旧口令：

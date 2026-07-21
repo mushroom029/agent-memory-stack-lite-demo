@@ -1,10 +1,24 @@
 # Memory Hygiene Nudge
 
-Use this before turning conversational language into durable project memory.
+Use this before turning ambiguous conversational language into durable project
+memory. For explicit user goals, prohibitions, acceptance criteria, or
+corrections, use [user-requirement-ledger.md](user-requirement-ledger.md)
+first.
 
 This is not a formal audit protocol. It is a small guard against writing a
 temporary request, pressure phrase, local failure, or short acknowledgement as a
 permanent project rule.
+
+## Explicit Instruction Exception
+
+Explicit user goals, prohibitions, acceptance criteria, and corrections are
+not weak memory merely because they arrive with pressure, frustration, repeated
+wording, or small wording changes. Treat them as requirements by default and
+give them an owner, route, and mandatory recall when they affect future work.
+
+If the scope of an explicit instruction is unclear, record `pending-review` or
+ask one focused question. Do not downgrade it to a soft preference just because
+it is emotionally expressed.
 
 ## Core Rule
 
@@ -12,7 +26,8 @@ Default to weak memory.
 
 If a note comes from one request, one failure, one pressure phrase, one short
 reply, or one temporary boundary, record it as task-local or revisable unless
-the user used explicit absolute wording.
+the user made an explicit goal, prohibition, acceptance criterion, or
+correction.
 
 Hard boundaries require clear absolute language such as:
 
@@ -23,6 +38,9 @@ Hard boundaries require clear absolute language such as:
 
 Short replies such as `好`, `可以`, `继续`, `收到`, `知道了`, `都行`, silence, or
 an unrelated next request do not create a hard durable rule.
+
+Absolute wording is required for a permanent project-wide hard boundary. It is
+not required to obey a direct current-task prohibition or acceptance gate.
 
 ## When To Speak
 
@@ -54,6 +72,8 @@ For durable capsules, state whether the saved rule is:
 - task-local;
 - revisable project habit;
 - hard boundary from explicit absolute wording.
+- explicit requirement from a user goal, prohibition, acceptance criterion, or
+  correction.
 
 ## Do Not Add
 

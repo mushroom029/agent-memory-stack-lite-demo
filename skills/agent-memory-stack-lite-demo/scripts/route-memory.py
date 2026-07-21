@@ -29,6 +29,7 @@ class Route:
     mandatory: tuple[str, ...]
     history: tuple[str, ...]
     reason: str
+    status: str
     line: int
     source: Path
 
@@ -58,13 +59,16 @@ def pointers(value: str) -> tuple[str, ...]:
     )
 
 
-def parse_routes(index_path: Path) -> list[Route]:
+def parse_routes(index_path: Path, *, include_legacy_destinations: bool = False) -> list[Route]:
     routes: list[Route] = []
     for line_number, line in enumerate(index_path.read_text(encoding="utf-8").splitlines(), 1):
         match = ROUTE_LINE_RE.match(line)
         if not match or "owners=" not in line.casefold():
             continue
         fields = {key.casefold(): value.strip() for key, value in FIELD_RE.findall(match.group(2))}
+        status = normalize(fields.get("status", ""))
+        if include_legacy_destinations and status == "archived-only":
+            continue
         owners = pointers(fields.get("owners", ""))
         if not owners:
             continue
@@ -77,6 +81,7 @@ def parse_routes(index_path: Path) -> list[Route]:
                 mandatory=pointers(fields.get("mandatory", "")),
                 history=pointers(fields.get("history", "")),
                 reason=fields.get("reason", "").strip(),
+                status=status,
                 line=line_number,
                 source=index_path,
             )
@@ -158,6 +163,7 @@ def route_to_dict(match: Match, memory_root: Path, tier: str) -> dict[str, objec
         "mandatory": list(route.mandatory),
         "history": list(route.history),
         "reason": route.reason,
+        "status": route.status,
         "index_line": route.line,
         "direct_hits": list(match.direct_hits),
         "keyword_hits": list(match.keyword_hits),
@@ -211,7 +217,19 @@ def main() -> int:
         parser.error(f"index does not exist: {index_path}")
 
     routes = parse_routes(index_path)
-    primary_matches = [match for route in routes if (match := evaluate(route, args.touch))]
+    legacy_destination_path = memory_root / "legacy-destinations.md"
+    legacy_destination_routes: list[Route] = []
+    if legacy_destination_path.is_file():
+        legacy_destination_routes = parse_routes(
+            legacy_destination_path,
+            include_legacy_destinations=True,
+        )
+        routes.extend(legacy_destination_routes)
+    primary_matches: list[Match] = []
+    for route in routes:
+        match = evaluate(route, args.touch)
+        if match:
+            primary_matches.append(match)
     primary_owners = unique(
         [pointer for match in primary_matches for pointer in match.route.owners]
     )
@@ -224,6 +242,24 @@ def main() -> int:
     history_route_errors: list[str] = []
     deferred_history_route_count = 0
     weak_candidates: list[dict[str, object]] = []
+    weak_candidate_keys: set[tuple[tuple[str, ...], tuple[str, ...], tuple[str, ...]]] = set()
+
+    def add_weak_candidate(route: Route, keyword_hits: list[str]) -> None:
+        key = (
+            tuple(route.owners),
+            tuple(route.mandatory),
+            tuple(sorted(normalize(hit) for hit in keyword_hits)),
+        )
+        if key in weak_candidate_keys:
+            return
+        weak_candidate_keys.add(key)
+        weak_candidates.append(
+            {
+                "scope": route.scope,
+                "source": str(route.source.relative_to(memory_root)),
+                "keyword_hits": keyword_hits,
+            }
+        )
 
     matched_scopes = {match.route.scope for match in primary_matches}
     for route in routes:
@@ -235,9 +271,7 @@ def main() -> int:
             if any(phrase_match(term, touch, allow_short_cjk=True) for touch in args.touch)
         ]
         if keyword_hits:
-            weak_candidates.append(
-                {"scope": route.scope, "source": "index.md", "keyword_hits": keyword_hits}
-            )
+            add_weak_candidate(route, keyword_hits)
 
     for match in primary_matches:
         for pointer in match.route.history:
@@ -269,13 +303,7 @@ def main() -> int:
                         )
                     ]
                     if keyword_hits:
-                        weak_candidates.append(
-                            {
-                                "scope": child.scope,
-                                "source": relative_route_file,
-                                "keyword_hits": keyword_hits,
-                            }
-                        )
+                        add_weak_candidate(child, keyword_hits)
 
     historical_owners = unique(
         [pointer for match in historical_matches for pointer in match.route.owners]
@@ -327,6 +355,7 @@ def main() -> int:
         "mandatory_owners": mandatory,
         "selected_source_bytes": selected_bytes,
         "history_route_files": unique(history_route_files),
+        "legacy_destination_route_count": len(legacy_destination_routes),
         "deferred_history_route_count": deferred_history_route_count,
         "unrelated_route_count": len(routes) - len(primary_matches),
         "weak_candidates": weak_candidates,

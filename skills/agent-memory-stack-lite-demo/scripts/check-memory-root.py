@@ -12,7 +12,7 @@ from pathlib import Path
 
 
 FIELD_RE = re.compile(r"^\s*-\s*([^:\n]+):\s*(.*)$", re.MULTILINE)
-CAPSULE_ID_RE = re.compile(r"\b(C[0-9][0-9A-Za-z_-]*)\b")
+CAPSULE_POINTER_RE = re.compile(r"^capsules/([^/#]+)\.md(?:#.*)?$", re.I)
 ROUTE_LINE_RE = re.compile(r"^\s*-\s*([^:]+):\s*(.+)$")
 ROUTE_FIELD_RE = re.compile(r"(?:^|;)\s*([a-z][a-z0-9_-]*)\s*=\s*([^;]*)", re.I)
 REVIEW_RE = re.compile(r"\[REVIEW:([A-Za-z0-9._-]+)\]")
@@ -32,6 +32,7 @@ NARRATIVE_LINE_SOFT_CHARS = 500
 NARRATIVE_DUPLICATION_SOFT_CHARS = 180
 MEMORY_SCHEMA_VERSION = "v0.2.7"
 CURRENT_CHECKPOINT_MARKER = "<!-- LITE-DEMO-V0.2.7-CHECKPOINT -->"
+CHECKPOINT_FILE = ".takeover-checkpoint"
 MEMORY_SCHEMA_RE = re.compile(
     r"^[ \t]*-[ \t]*Memory schema:[ \t]*(\S+)[ \t]*\r?$", re.I | re.MULTILINE
 )
@@ -39,12 +40,114 @@ CHECKPOINT_LENGTH_RE = re.compile(r"^- Legacy prefix bytes:\s*(\d+)\s*$", re.MUL
 CHECKPOINT_HASH_RE = re.compile(
     r"^- Legacy prefix SHA256:\s*([0-9A-Fa-f]{64})\s*$", re.MULTILINE
 )
+CHECKPOINT_KIND_RE = re.compile(r"^- Checkpoint kind:\s*(\S+)\s*$", re.MULTILINE)
+LEGACY_DESTINATIONS_FILE = "legacy-destinations.md"
+LEGACY_DESTINATION_ALLOWED_STATUSES = {
+    "memory-owner",
+    "mandatory-guard",
+    "rejected-path",
+    "project-owner-indexed",
+    "archived-only",
+    "pending-review",
+}
+LEGACY_DESTINATION_OWNER_STATUSES = {
+    "memory-owner",
+    "mandatory-guard",
+    "rejected-path",
+    "project-owner-indexed",
+}
+LEGACY_DESTINATION_PROBE_STATUSES = {
+    "memory-owner",
+    "mandatory-guard",
+    "rejected-path",
+    "project-owner-indexed",
+}
+GENERIC_LEGACY_WAKE_TERMS = {
+    "legacy",
+    "legacy source",
+    "legacy active task",
+    "legacy context",
+    "legacy index",
+    "legacy destination",
+    "legacy capsule",
+    "capsule",
+    "capsule owner",
+    "current context",
+    "active task",
+    "session log",
+    "import",
+    "import evidence",
+    "owner",
+    "route",
+    "source",
+    "evidence",
+}
+GENERIC_LEGACY_REASONS = {
+    "import route",
+    "preserved cold evidence",
+    "legacy source",
+    "legacy evidence",
+}
+LEGACY_FILE_ROLE_SCOPE_RE = re.compile(
+    r"^(?:"
+    r"c[0-9][0-9a-z_-]*|"
+    r"capsules[-_/\\]c[0-9][0-9a-z_-]*|"
+    r"capsules[-_/\\][^\\/]+|"
+    r"active-task|current-context|index|session-log|legacy-destinations|"
+    r"\.takeover-checkpoint"
+    r")$",
+    re.I,
+)
+LEGACY_CAPSULE_SOURCE_RE = re.compile(r"(?:^|[\\/])capsules[\\/][^\\/]+\.md$", re.I)
+MEMORY_LAYER_OWNER_RE = re.compile(
+    r"^(?:"
+    r"capsules/|tasks/|routes/|current-context\.md|active-task\.md|"
+    r"index\.md|session-log\.md|legacy-destinations\.md"
+    r")",
+    re.I,
+)
+LEGACY_REQUIREMENT_SIGNAL_RE = re.compile(
+    r"\[REVIEW:|Run Audit|Memory ID:|Requirement Ledger|forbidden-action|"
+    r"acceptance[- ]?(?:gate|criterion)|correction[- ]?guard|rejected[- ]?path|"
+    r"regression[- ]?guard|stable behavior|explicit prohibition|"
+    r"\bdo not\b|\bdon't\b|\bmust\b|\bnever\b|\bforbidden\b|\bprohibit|\brequir|"
+    r"禁止|不要|不得|不能|不允许|必须|务必|验收|纠正|否决|驳回|拒绝|"
+    r"不要再|边界|保护|稳定|回滚|压力|骂|生气|愤怒|崩溃",
+    re.I,
+)
+LEGACY_TEMPLATE_LINE_RE = re.compile(
+    r"^\s*(?:"
+    r"#\s*(?:Current Context|Context Index|Session Log|Active Task)|"
+    r"##\s*(?:Module Aliases|Module Index|Lite Demo v0\.2\.7 Memory Checkpoint)|"
+    r"-\s*(?:Updated|Project|Project phase|Memory landing policy|Lite demo activation phrase|"
+    r"Natural start phrase|Explicit safe phrase|Legacy compatibility phrase|Current anchor|"
+    r"Task branches|Active topic|Owner router|Checkpoint kind|Recorded UTC|"
+    r"Legacy prefix bytes|Legacy prefix SHA256|Rule):|"
+    r"-\s*Active goal:\s*Not set yet\.|"
+    r"-\s*Active task pointer:\s*none\.|"
+    r"-\s*Selected owner routes:\s*none\b|"
+    r"-\s*Stable/protected behavior:\s*Not set yet\b|"
+    r"-\s*Next step:\s*Ask for the real task\b|"
+    r"-\s*Memory hygiene:\s*(?:one-off requests|ambiguous one-off requests)\b|"
+    r"-\s*Legacy source import:\s*if the user names\b|"
+    r"-\s*Old-user takeover:\s*package v[0-9.]+\b|"
+    r"-\s*Execution route:\s*sniff once\b|"
+    r"-\s*(?:task|branch|route|recovery|owner|boundary):\s|"
+    r"-\s*Notes:\s*Add a compact\b|"
+    r"<!--\s*LITE-DEMO-|"
+    r"-\s*Memory schema:\s*v0\.2\.7"
+    r")",
+    re.I,
+)
+LEGACY_SURFACE_NAMES = ("current-context.md", "index.md", "active-task.md")
+LEGACY_SURFACE_DIRS = ("capsules", "tasks", "routes")
 PRIMARY_OWNER_FANOUT_SOFT_COUNT = 8
 STRICT_ROUTING_WARNING_PARTS = (
     "has no Memory schema",
     "has no Module aliases section",
     "has owners= but no normative body owner",
     "points to missing owner",
+    "references missing capsule",
     "owner fragment was not found",
     "has no wake-up route",
     "has no status=pending-review owner route",
@@ -61,6 +164,7 @@ STRICT_ROUTING_WARNING_PARTS = (
     "Memory schema entries; exactly one required",
     "must contain exactly one v0.2.7 checkpoint",
     "v0.2.7 checkpoint is invalid",
+    "legacy-destinations.md",
 )
 
 
@@ -91,9 +195,12 @@ def is_active_task(text: str) -> bool:
 
 def index_capsule_ids(index_text: str) -> set[str]:
     ids: set[str] = set()
-    for line in index_text.splitlines():
-        if "capsules=" in line.lower() or re.match(r"\s*-\s*C[0-9A-Za-z_-]+\s*:", line):
-            ids.update(CAPSULE_ID_RE.findall(line))
+    for route in route_entries(index_text):
+        for pointer in (*route["owners"], *route["mandatory"]):
+            normalized = pointer.strip().replace("\\", "/")
+            match = CAPSULE_POINTER_RE.match(normalized)
+            if match:
+                ids.add(match.group(1))
     return ids
 
 
@@ -135,6 +242,232 @@ def route_entries(index_text: str, source: str = "index.md") -> list[dict[str, o
     return entries
 
 
+def route_values(value: str) -> list[str]:
+    return [
+        item.strip().strip("`\"'")
+        for item in VALUE_SPLIT_RE.split(value or "")
+        if item.strip().strip("`\"'").casefold() not in {"", "none", "n/a"}
+    ]
+
+
+def semantic_legacy_terms(values: list[str]) -> list[str]:
+    semantic: list[str] = []
+    for value in values:
+        normalized = re.sub(r"\s+", " ", value.strip().casefold())
+        if not normalized:
+            continue
+        if normalized in GENERIC_LEGACY_WAKE_TERMS:
+            continue
+        if LEGACY_FILE_ROLE_SCOPE_RE.match(normalized):
+            continue
+        semantic.append(value)
+    return semantic
+
+
+def is_memory_layer_owner(pointer: str) -> bool:
+    return MEMORY_LAYER_OWNER_RE.match(pointer.strip().replace("\\", "/")) is not None
+
+
+def legacy_prefix_text(session_text: str) -> str:
+    marker_index = session_text.find(CURRENT_CHECKPOINT_MARKER)
+    return session_text[:marker_index] if marker_index >= 0 else session_text
+
+
+def meaningful_legacy_lines(text: str) -> list[str]:
+    return [
+        line.strip()
+        for line in text.splitlines()
+        if line.strip()
+        and line.strip() != "# Session Log"
+        and not LEGACY_TEMPLATE_LINE_RE.match(line.strip())
+    ]
+
+
+def has_meaningful_legacy_text(text: str) -> bool:
+    if not text.strip():
+        return False
+    meaningful_lines = meaningful_legacy_lines(text)
+    if not meaningful_lines:
+        return False
+    meaningful_text = "\n".join(meaningful_lines)
+    if LEGACY_REQUIREMENT_SIGNAL_RE.search(meaningful_text):
+        return True
+    if re.search(
+        r"(?im)^##\s+(?!Lite Demo v0\.2\.[0-9]+ .*Checkpoint)",
+        meaningful_text,
+    ):
+        return True
+    return len(meaningful_lines) >= 20
+
+
+def has_meaningful_legacy_history(prefix_text: str) -> bool:
+    return has_meaningful_legacy_text(prefix_text)
+
+
+def iter_legacy_surface_paths(root: Path) -> tuple[Path, ...]:
+    paths: list[Path] = []
+    for name in LEGACY_SURFACE_NAMES:
+        candidate = root / name
+        if candidate.is_file():
+            paths.append(candidate)
+    for directory_name in LEGACY_SURFACE_DIRS:
+        directory = root / directory_name
+        if directory.is_dir():
+            paths.extend(sorted(path for path in directory.rglob("*.md") if path.is_file()))
+    return tuple(dict.fromkeys(paths))
+
+
+def has_meaningful_legacy_surfaces(root: Path) -> bool:
+    for path in iter_legacy_surface_paths(root):
+        if path.name == LEGACY_DESTINATIONS_FILE:
+            continue
+        try:
+            text = read_text(path)
+        except UnicodeDecodeError:
+            return True
+        if has_meaningful_legacy_text(text):
+            return True
+    return False
+
+
+def legacy_destination_entries(text: str) -> list[dict[str, object]]:
+    entries: list[dict[str, object]] = []
+    for line_number, line in enumerate(text.splitlines(), 1):
+        match = ROUTE_LINE_RE.match(line)
+        if not match or "status=" not in line.casefold():
+            continue
+        route_fields = {
+            key.casefold(): value.strip()
+            for key, value in ROUTE_FIELD_RE.findall(match.group(2))
+        }
+        entries.append(
+            {
+                "id": match.group(1).strip(),
+                "fields": route_fields,
+                "line": line_number,
+            }
+        )
+    return entries
+
+
+def validate_legacy_destinations(
+    root: Path, destination_path: Path, warnings: list[str]
+) -> None:
+    text = read_text(destination_path)
+    if "legacy destination schema" not in text.casefold():
+        warnings.append(
+            "legacy-destinations.md has no Legacy destination schema field"
+        )
+    entries = legacy_destination_entries(text)
+    if not entries:
+        warnings.append("legacy-destinations.md has no destination entries")
+        return
+
+    seen_ids: set[str] = set()
+    non_archived_count = 0
+    generic_destination_ids: list[str] = []
+    owner_counts: dict[str, int] = defaultdict(int)
+    for entry in entries:
+        entry_id = str(entry["id"])
+        fields_by_name = entry["fields"]
+        assert isinstance(fields_by_name, dict)
+        normalized_id = entry_id.casefold()
+        if normalized_id in seen_ids:
+            warnings.append(
+                f"legacy-destinations.md entry '{entry_id}' is duplicated"
+            )
+        seen_ids.add(normalized_id)
+
+        status = fields_by_name.get("status", "").casefold()
+        if not status:
+            warnings.append(
+                f"legacy-destinations.md entry '{entry_id}' has no status"
+            )
+            continue
+        if status != "archived-only":
+            non_archived_count += 1
+        if status not in LEGACY_DESTINATION_ALLOWED_STATUSES:
+            warnings.append(
+                f"legacy-destinations.md entry '{entry_id}' has invalid status: {status}"
+            )
+        for required in ("source", "scope", "reason"):
+            if not fields_by_name.get(required, "").strip():
+                warnings.append(
+                    f"legacy-destinations.md entry '{entry_id}' has no {required}"
+                )
+
+        wake_terms = route_values(fields_by_name.get("aliases", "")) + route_values(
+            fields_by_name.get("keywords", "")
+        )
+        owners = route_values(fields_by_name.get("owners", ""))
+        probes = route_values(fields_by_name.get("probes", ""))
+        source = fields_by_name.get("source", "").strip()
+        scope = fields_by_name.get("scope", "").strip()
+        reason = fields_by_name.get("reason", "").strip()
+
+        if status != "archived-only" and not wake_terms:
+            warnings.append(
+                f"legacy-destinations.md entry '{entry_id}' has no aliases or keywords"
+            )
+        elif status != "archived-only" and not semantic_legacy_terms(wake_terms):
+            generic_destination_ids.append(entry_id)
+            warnings.append(
+                f"legacy-destinations.md entry '{entry_id}' has only generic wake terms; classify the legacy item by semantic function, not by file role"
+            )
+        if (
+            status != "archived-only"
+            and LEGACY_FILE_ROLE_SCOPE_RE.match(scope)
+            and (LEGACY_CAPSULE_SOURCE_RE.search(source) or not semantic_legacy_terms(wake_terms))
+        ):
+            warnings.append(
+                f"legacy-destinations.md entry '{entry_id}' uses a file-role scope instead of a semantic legacy scope: {scope}"
+            )
+        if status != "archived-only" and reason.strip().casefold() in GENERIC_LEGACY_REASONS:
+            warnings.append(
+                f"legacy-destinations.md entry '{entry_id}' has a generic reason; explain the preserved requirement, guard, rejected path, owner, or archival reason"
+            )
+        if status in LEGACY_DESTINATION_OWNER_STATUSES and not owners:
+            warnings.append(
+                f"legacy-destinations.md entry '{entry_id}' has status={status} but no owners"
+            )
+        if status == "project-owner-indexed" and any(is_memory_layer_owner(pointer) for pointer in owners):
+            warnings.append(
+                f"legacy-destinations.md entry '{entry_id}' has status=project-owner-indexed but points to a memory-layer owner; use memory-owner/mandatory-guard/rejected-path or point to a real project owner"
+            )
+        if status in LEGACY_DESTINATION_PROBE_STATUSES and not probes:
+            warnings.append(
+                f"legacy-destinations.md entry '{entry_id}' has status={status} but no route probes"
+            )
+        if status == "pending-review" and not (
+            owners or "[REVIEW:" in fields_by_name.get("source", "")
+        ):
+            warnings.append(
+                f"legacy-destinations.md entry '{entry_id}' is pending-review but has no review owner/source"
+            )
+        if status == "pending-review":
+            warnings.append(
+                f"legacy-destinations.md entry '{entry_id}' is pending-review; pending-review is not takeover completion"
+            )
+        for pointer in owners:
+            owner_counts[pointer.strip().replace("\\", "/")] += 1
+            target = pointer_path(root, pointer)
+            if not target.is_file():
+                warnings.append(
+                    f"legacy-destinations.md entry '{entry_id}' points to missing owner: {pointer}"
+                )
+    if non_archived_count >= 10 and generic_destination_ids:
+        warnings.append(
+            f"legacy-destinations.md has {len(generic_destination_ids)} generic non-archived destination entries; a takeover manifest must be a semantic inventory, not a file listing"
+        )
+    if non_archived_count >= 10:
+        for pointer, count in sorted(owner_counts.items(), key=lambda item: (-item[1], item[0])):
+            if count >= 10 and count / max(1, non_archived_count) >= 0.6:
+                warnings.append(
+                    f"legacy-destinations.md collapses {count} non-archived entries onto one owner ({pointer}); split by meaningful owner or mark cold evidence archived-only with reasons"
+                )
+                break
+
+
 def pointer_path(root: Path, pointer: str) -> Path:
     relative = pointer.split("#", 1)[0]
     return (root / relative).resolve()
@@ -160,7 +493,14 @@ def narrative_units(text: str) -> set[str]:
 
 def repeated_live_fields(text: str) -> list[str]:
     counts: dict[str, int] = defaultdict(int)
-    live_names = {"status", "current step", "completed", "next exact step", "route check"}
+    live_names = {
+        "status",
+        "current step",
+        "completed",
+        "progress boundary",
+        "next exact step",
+        "route check",
+    }
     for match in FIELD_RE.finditer(text):
         name = match.group(1).strip().casefold()
         if name in live_names:
@@ -172,7 +512,55 @@ def has_secret_like_text(text: str) -> bool:
     return any(pattern.search(text) for pattern in SECRET_PATTERNS)
 
 
-def checkpoint_is_valid(data: bytes) -> bool:
+def checkpoint_fields_from_text(text: str) -> tuple[int, str] | None:
+    length_match = CHECKPOINT_LENGTH_RE.search(text)
+    hash_match = CHECKPOINT_HASH_RE.search(text)
+    if not length_match or not hash_match:
+        return None
+    return int(length_match.group(1)), hash_match.group(1).upper()
+
+
+def checkpoint_kind_from_text(text: str) -> str | None:
+    match = CHECKPOINT_KIND_RE.search(text)
+    return match.group(1) if match else None
+
+
+def standalone_checkpoint_text(root: Path) -> str | None:
+    """v0.2.13: checkpoint metadata lives in the standalone .takeover-checkpoint."""
+    path = root / CHECKPOINT_FILE
+    if not path.is_file():
+        return None
+    try:
+        text = read_text(path)
+    except UnicodeDecodeError:
+        return ""
+    return text
+
+
+def prefix_hash_ok(data: bytes, fields: tuple[int, str]) -> bool:
+    prefix_length, expected = fields
+    if prefix_length > len(data):
+        return False
+    actual = hashlib.sha256(data[:prefix_length]).hexdigest().upper()
+    return actual == expected
+
+
+def checkpoint_is_valid(data: bytes, root: Path | None = None) -> bool:
+    """Validate the current checkpoint against the session-log prefix.
+
+    Prefers the standalone .takeover-checkpoint file (v0.2.13); falls back to a
+    legacy in-log marker for un-migrated roots. The legacy prefix is always the
+    session-log bytes [0:prefix_length], regardless of where the metadata lives.
+    """
+    if root is not None:
+        standalone = standalone_checkpoint_text(root)
+        if standalone is not None:
+            if not standalone or CURRENT_CHECKPOINT_MARKER not in standalone:
+                return False
+            fields = checkpoint_fields_from_text(standalone)
+            if fields is None:
+                return False
+            return prefix_hash_ok(data, fields)
     marker = CURRENT_CHECKPOINT_MARKER.encode("ascii")
     if data.count(marker) != 1:
         return False
@@ -180,15 +568,10 @@ def checkpoint_is_valid(data: bytes) -> bool:
         tail = data[data.index(marker) :].decode("utf-8")
     except UnicodeDecodeError:
         return False
-    length_match = CHECKPOINT_LENGTH_RE.search(tail)
-    hash_match = CHECKPOINT_HASH_RE.search(tail)
-    if not length_match or not hash_match:
+    fields = checkpoint_fields_from_text(tail)
+    if fields is None:
         return False
-    prefix_length = int(length_match.group(1))
-    if prefix_length > len(data):
-        return False
-    actual = hashlib.sha256(data[:prefix_length]).hexdigest().upper()
-    return actual == hash_match.group(1).upper()
+    return prefix_hash_ok(data, fields)
 
 
 def validate(root: Path) -> tuple[list[str], list[str]]:
@@ -243,7 +626,7 @@ def validate(root: Path) -> tuple[list[str], list[str]]:
         )
     if len(session_text.splitlines()) > SESSION_LOG_TAIL_ONLY_LINES:
         warnings.append(
-            "session-log.md is long; preserve the complete local log but use only a recent tail or targeted search/range for recovery"
+            "session-log.md is long; run takeover-memory.py discharge for settled structured entries, then roll only as a safety bound; read the log through an exact unresolved route or targeted search/range, never as a default recovery payload"
         )
 
     for path in active_paths:
@@ -301,17 +684,60 @@ def validate(root: Path) -> tuple[list[str], list[str]]:
                 f"index.md has no Memory schema: {MEMORY_SCHEMA_VERSION} takeover marker"
             )
 
-        checkpoint_count = session_data.count(CURRENT_CHECKPOINT_MARKER.encode("ascii"))
-        if checkpoint_count == 0 and schema_is_current:
-            warnings.append(
-                "index.md has current schema but no v0.2.7 checkpoint; takeover is incomplete"
+        # v0.2.13: prefer the standalone checkpoint file; fall back to an in-log
+        # marker for un-migrated roots. A vestigial in-log marker left behind
+        # after migration is ignored once the standalone file exists.
+        standalone_text = standalone_checkpoint_text(root)
+        in_log_count = session_data.count(CURRENT_CHECKPOINT_MARKER.encode("ascii"))
+        if standalone_text is not None:
+            if not standalone_text or CURRENT_CHECKPOINT_MARKER not in standalone_text:
+                warnings.append(f"{CHECKPOINT_FILE} is present but has no valid checkpoint")
+            elif not checkpoint_is_valid(session_data, root):
+                warnings.append("session-log.md v0.2.7 checkpoint is invalid")
+        else:
+            if in_log_count == 0 and schema_is_current:
+                warnings.append(
+                    "index.md has current schema but no v0.2.7 checkpoint; takeover is incomplete"
+                )
+            elif in_log_count > 1:
+                warnings.append(
+                    f"session-log.md must contain exactly one v0.2.7 checkpoint; found {in_log_count}"
+                )
+            elif in_log_count == 1 and not checkpoint_is_valid(session_data, root):
+                warnings.append("session-log.md v0.2.7 checkpoint is invalid")
+
+        legacy_destinations = root / LEGACY_DESTINATIONS_FILE
+        checkpoint_fields = None
+        checkpoint_text = ""
+        if standalone_text:
+            checkpoint_text = standalone_text
+            checkpoint_fields = checkpoint_fields_from_text(checkpoint_text)
+        if checkpoint_fields is None:
+            checkpoint_text = (
+                session_text[session_text.find(CURRENT_CHECKPOINT_MARKER):]
+                if CURRENT_CHECKPOINT_MARKER in session_text
+                else ""
             )
-        elif checkpoint_count > 1:
-            warnings.append(
-                f"session-log.md must contain exactly one v0.2.7 checkpoint; found {checkpoint_count}"
-            )
-        elif checkpoint_count == 1 and not checkpoint_is_valid(session_data):
-            warnings.append("session-log.md v0.2.7 checkpoint is invalid")
+            checkpoint_fields = checkpoint_fields_from_text(checkpoint_text)
+        if checkpoint_fields is not None:
+            legacy_prefix = session_text.encode("utf-8", "surrogatepass")[: checkpoint_fields[0]].decode("utf-8", "replace")
+        else:
+            legacy_prefix = legacy_prefix_text(session_text)
+        legacy_destination_required = has_meaningful_legacy_history(legacy_prefix)
+        if (
+            not legacy_destination_required
+            and checkpoint_kind_from_text(checkpoint_text) != "fresh-initialization"
+        ):
+            legacy_destination_required = has_meaningful_legacy_surfaces(root)
+        if legacy_destination_required:
+            if not legacy_destinations.is_file():
+                warnings.append(
+                    "legacy-destinations.md is required when takeover sees meaningful legacy history"
+                )
+            else:
+                validate_legacy_destinations(root, legacy_destinations, warnings)
+        elif legacy_destinations.exists():
+            validate_legacy_destinations(root, legacy_destinations, warnings)
 
         ids = index_capsule_ids(index_text)
         if ids and not capsules_dir.exists():
@@ -320,7 +746,7 @@ def validate(root: Path) -> tuple[list[str], list[str]]:
             if cid.lower() == "ids":
                 continue
             if not (capsules_dir / f"{cid}.md").exists():
-                errors.append(f"index.md references missing capsule: capsules/{cid}.md")
+                warnings.append(f"index.md references missing capsule: capsules/{cid}.md")
 
         index_lower = index_text.lower()
         if "pressure signal index" in index_lower or "pressure=" in index_lower:
@@ -434,7 +860,7 @@ def validate(root: Path) -> tuple[list[str], list[str]]:
                     f"session-log.md [REVIEW:{review_id}] has no status=pending-review owner route"
                 )
 
-    memory_files = [current, index, active_task, session_log]
+    memory_files = [current, index, active_task, session_log, root / LEGACY_DESTINATIONS_FILE]
     memory_files.extend(path for path in active_paths if path != active_task)
     if capsules_dir.exists():
         memory_files.extend(sorted(capsules_dir.glob("*.md")))

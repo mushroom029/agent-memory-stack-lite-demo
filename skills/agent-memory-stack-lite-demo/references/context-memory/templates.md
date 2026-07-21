@@ -82,14 +82,14 @@ successful test. Update the relevant owner or active route instead.
 - Stable behavior: # short IDs/pointers unless this active task is the owner
 - 稳定模块保护判断:
 - Memory hygiene: task-local | revisable habit | hard boundary from explicit absolute wording
-- Artifact discipline:
+- Artifact discipline: # include required deliverable paths and existence/readability status before completion
 - Encoding check:
 - Pressure signals: # short IDs/pointers unless this active task is the owner
 - Rejected approaches: # short IDs/pointers unless this active task is the owner
 - Current step:
-- Completed: # bounded milestone summary/evidence pointers, not chronology
-- Next exact step: # use "None; task complete" when Status is complete
-- Validation gates:
+- Progress boundary: # single current value ("through batch/step X"); overwrite on refresh; never enumerate intervals, batches, or validator names — details live with owners, index routes, or local artifacts
+- Next exact step: # use "None; task complete" only after required deliverables exist and validators pass
+- Validation gates: # include required artifact existence/readability checks when user requested files
 - Regression guards:
 - Rollback/backups:
 - Do not touch:

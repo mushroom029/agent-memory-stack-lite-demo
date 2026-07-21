@@ -157,6 +157,15 @@ try {
         throw "Downloaded package does not contain scripts/install.ps1"
     }
 
+    $downloadedVersionPath = Join-Path $packageRoot.FullName "VERSION.txt"
+    if (-not (Test-Path -LiteralPath $downloadedVersionPath)) {
+        throw "Downloaded package is missing VERSION.txt"
+    }
+    $downloadedVersion = (Get-Content -LiteralPath $downloadedVersionPath -Raw -Encoding UTF8).Trim()
+    if ($downloadedVersion -ne [string]$manifest.version) {
+        throw "Downloaded package version mismatch. Manifest version $($manifest.version) but package VERSION.txt is $downloadedVersion"
+    }
+
     $checkScript = Join-Path $packageRoot.FullName "scripts/check-package.ps1"
     $installScript = Join-Path $packageRoot.FullName "scripts/install.ps1"
 

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Read a bounded recovery view from an append-only Lite Demo session log."""
+"""Read a bounded targeted view from a helper-managed Lite Demo session log."""
 
 from __future__ import annotations
 
@@ -9,6 +9,7 @@ from pathlib import Path
 
 
 DEFAULT_TAIL_LINES = 60
+LARGE_LOG_LINES = 240
 
 
 def read_lines(path: Path) -> list[str]:
@@ -65,6 +66,12 @@ def main() -> int:
         parser.error("choose either --search or a line range")
 
     lines = read_lines(args.log)
+    if len(lines) > LARGE_LOG_LINES:
+        sys.stderr.write(
+            f"note: session-log.md has {len(lines)} lines (> {LARGE_LOG_LINES}); "
+            "run takeover-memory.py discharge for settled structured entries, then "
+            "use roll only as a safety bound. This helper still returns a bounded view.\n"
+        )
     try:
         if args.search:
             selected = search_lines(lines, args.search, args.context, args.match_limit)

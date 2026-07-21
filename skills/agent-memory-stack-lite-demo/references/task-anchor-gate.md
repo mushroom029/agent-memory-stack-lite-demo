@@ -33,18 +33,30 @@ The anchor must include:
 - Memory hygiene: whether user language is task-local, a revisable habit, or a hard boundary from explicit absolute wording;
 - 稳定模块保护判断;
 - current step;
-- completed steps;
+- progress boundary (the single "through X" value, not an enumeration);
 - next exact step;
 - allowed changes;
 - forbidden changes;
 - validation gates;
 - rejected paths or failed approaches that should not be retried.
 
+If the user requires named delivery artifacts, completion is gated by the
+artifacts themselves. Before setting `Status: complete` or `Next exact step:
+None; task complete`, verify that every required artifact exists at the
+recorded path, is readable, and contains the required pass/fail/gaps or human
+handoff fields. If any required artifact is missing, stale, unreadable, or only
+promised in memory, keep `Status: active`, set the next exact step to create or
+repair that artifact, and record the gap in `Validation gates`.
+
 Keep the anchor bounded and directive. It owns the current goal, current and
 next exact step, critical user corrections, rejected paths, stable boundaries,
-and evidence pointers. It does not own per-batch chronology. On refresh,
-replace stale progress summaries rather than appending another dated or
-batch-by-batch history block; preserve chronology in `session-log.md`.
+and evidence pointers. It does not own per-batch chronology — and chronology
+has no memory home at all: routine chronology is not memory. Addressable
+details (which batch or step lives where) belong to index routes, owners, or
+local artifacts; still-unresolved events belong to `session-log.md` until they
+are resolved or promoted and then discharged. On refresh, replace stale
+progress summaries rather than appending another dated or batch-by-batch
+history block.
 
 Before rerunning a network call, paid model call, crawl, or expensive generator,
 check whether an existing artifact already answers the need. Prefer the existing
@@ -52,6 +64,11 @@ artifact unless it is stale, invalid, missing, or the user explicitly asks to
 regenerate it. Do not turn this into a visible pre-call ritual for ordinary
 API/model use. If the decision matters for recovery, record the artifact path
 and reason in the next Run Audit card.
+
+For local generated deliverables, artifact discipline is also a finish gate:
+do not treat an active-task summary, Run Audit card, or owner capsule as a
+substitute for a user-requested `result.json`, report, trace, or delivery file
+unless the user explicitly accepts that substitution.
 
 Refresh the anchor:
 

@@ -97,6 +97,19 @@ Use the same project memory root:
 docs/codex/
 ```
 
+When this root does not exist yet and the user or harness has authorized
+landing, create it only with:
+
+```text
+scripts/takeover-memory.py initialize docs/codex/
+```
+
+Do not hand-write `current-context.md`, `index.md`, `session-log.md`,
+`Memory schema: v0.2.7`, or `.takeover-checkpoint` as a substitute. A
+hand-created root with current files but no verified checkpoint must be treated
+as an incomplete runtime state: first repair it through the helper path, or
+record the gap instead of claiming pass.
+
 For parallel task lines, prefer:
 
 ```text
@@ -158,6 +171,9 @@ Codex may create or update task anchors automatically after the trigger. It must
 - which path was written;
 - what was recorded;
 - how to switch back to ask-before-write mode.
+
+Preauthorization covers memory landing and task-anchor updates. It does not
+waive the atomic initialization requirement for the first root.
 
 Default policy is:
 

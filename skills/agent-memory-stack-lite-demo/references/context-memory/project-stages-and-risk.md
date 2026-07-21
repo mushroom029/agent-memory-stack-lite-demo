@@ -66,6 +66,11 @@ works normally across later related fixes.
 - `high`: Repeated regression, broken user trust, real-use workflow damage, or
   strong pressure that identifies an agent behavior pattern.
 
+If the user explicitly corrects the same behavior twice, or expresses strong
+frustration after a recorded correction was ignored, immediately create or
+update a `mandatory-guard` or `correction-guard` owner with wake-up terms. Do
+not leave it as apology-only chat or pressure-only evidence.
+
 Only record pressure when it points to project behavior, user-facing pain,
 testing conclusions, repeated regressions, or required agent discipline. Do not
 record free-floating emotion with no project implication.
@@ -166,12 +171,14 @@ regression guards pass, or the module works normally across later fixes.
 
 Before acting after resume, compaction, model switch, or a risky request:
 
-1. Read `current-context.md`.
-2. Read the full keyword/tag map in `index.md`.
-3. Identify touched modules and related phase, stable behavior, pressure,
+1. Read `active-task.md` if present and active.
+2. Read `current-context.md`.
+3. Read the full keyword/tag map in `index.md`.
+4. Identify touched modules and related phase, stable behavior, pressure,
    rejected approach, and guard entries.
-4. Read `active-task.md` if present and active.
-5. Open only the relevant capsules and recent log section.
+5. Open every matched owner and mandatory guard. Read `session-log.md` only for
+   an exact unresolved route, source conflict, or remaining evidence gap; use
+   an ID search or bounded range, never a tail chosen only by recency.
 6. Produce a short activation packet using [activation-packet-template.md](activation-packet-template.md):
 
 ```md
