@@ -1,6 +1,6 @@
 interface:
   display_name: "Agent Memory Lite Demo"
-  short_description: "Legacy memory choice gate, precise recall, and task recovery"
+  short_description: "Legacy memory choice gate, pressure pre-checks, and task recovery"
   default_prompt: "Use $agent-memory-stack-lite-demo：启用外挂记忆 / 启动外挂记忆。"
 
 policy:

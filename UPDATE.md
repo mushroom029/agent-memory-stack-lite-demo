@@ -22,6 +22,14 @@ https://github.com/mushroom029/agent-memory-stack-lite-demo/tree/main/skills/age
 
 GitHub 直装会得到同一个 skill 目录和 updater，但不会自行运行 zip 包根目录的全局 AGENTS 写入脚本。用户明确启用时仍可由 skill 工作；后续官方 updater 会校验并刷新全局 gate。不要重新猜 GitHub 仓库根目录。
 
+## v0.2.18 升级说明
+
+- 包版本是 v0.2.18；磁盘 memory schema/checkpoint 继续沿用 `v0.2.7` 兼容标签，不能用包版本字样判断接管完成。
+- 保留 v0.2.17 的单 skill、旧记忆选择、旧源继承、session-log 出院、派生指针召回、长文本切片和包体排污检查。
+- 新增 pressure-boundary pre-check：当任务处于恢复、纠错、高压力、稳定模块风险、否决路径风险或交付阻塞时，Codex 在 active-task 或任务 owner 写一张很短的 Execution pre-check card，先列出匹配约束、安全默认、禁做动作、触发提醒、停止询问点、完成阻塞和证据 owner。
+- 这个自检卡是记忆层执行契约，不是新的工程协议、不保证任务成功、不要求用户反复确认。能走安全默认就直接走；只有真实冲突才用 `Lite Demo 提醒：` 简短说明。
+- Run Audit 新增 `Pressure pre-check: green | yellow | red | not-triggered`，用于记录这轮是否真的遵守了压力边界、稳定模块、否决路径和完成阻塞。
+
 ## v0.2.17 升级说明
 
 - 包版本是 v0.2.17；磁盘 memory schema/checkpoint 继续沿用 `v0.2.7` 兼容标签，不能用包版本字样判断接管完成。

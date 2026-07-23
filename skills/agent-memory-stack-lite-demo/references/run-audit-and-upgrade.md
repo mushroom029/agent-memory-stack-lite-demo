@@ -54,6 +54,7 @@ exact step, and do not mark the active task complete.
 - Touched modules / protected not touched:
 - Route drift / repeated failed path:
 - Artifact discipline:
+- Pressure pre-check:
 - Encoding check:
 - Memory hygiene:
 - Tests/evidence:
@@ -71,6 +72,12 @@ exact step, and do not mark the active task complete.
 - `Touched modules / protected not touched`: say what changed and which stable areas were deliberately left alone.
 - `Route drift / repeated failed path`: name avoided old paths or unresolved drift.
 - `Artifact discipline`: reuse existing artifact before rerunning network/model calls unless the artifact is stale, invalid, missing, or the user explicitly asks to regenerate. Record the artifact path/evidence when relevant. For user-requested local deliverables, name every required file and whether it exists and is readable; missing files are completion blockers, not optional notes.
+- `Pressure pre-check`: use `green`, `yellow`, `red`, or `not-triggered`.
+  Green means task-relevant constraints were matched, the safe default was used,
+  and no avoidable confirmation happened. Yellow means the card existed but the
+  check, wording, or prompt budget was weak. Red means Codex violated a
+  forbidden action, revived a rejected path, touched protected behavior without
+  the required explanation, or claimed completion early.
 - `Encoding check`: if Chinese memory/log/UI text changed, note UTF-8 write method and sentinel/mojibake result. See `encoding-discipline.md`.
 - `Memory hygiene`: note whether temporary requests, pressure, failures, or short replies stayed task-local/revisable instead of becoming hard rules.
 - `Owner route`: name the one body owner and its compact `index.md` wake-up route;
@@ -97,6 +104,7 @@ hide evidence that the next Codex needs for recovery or upgrade judgment.
 - Route drift observed:
 - Repeated failed path avoided:
 - Artifact discipline:
+- Pressure pre-check:
 - Encoding check:
 - User correction:
 - Memory hygiene note:

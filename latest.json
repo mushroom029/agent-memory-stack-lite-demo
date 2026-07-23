@@ -1,12 +1,12 @@
 {
   "package": "agent-memory-stack-lite-demo",
   "channel": "stable",
-  "version": "v0.2.17",
-  "publishedAt": "2026-07-21",
-  "manifestUrl": "https://159.75.127.201/agent-memory-stack/lite-demo/latest.json",
-  "zipUrl": "https://159.75.127.201/agent-memory-stack/lite-demo/agent-memory-stack-lite-demo-v0.2.17.zip",
-  "sha256": "3ADC0DE49AA895214018EA813152B577BD067C12989250403AB71753C7E77D45",
-  "sizeBytes": 247367,
+  "version": "v0.2.18",
+  "publishedAt": "2026-07-24",
+  "manifestUrl": "https://raw.githubusercontent.com/mushroom029/agent-memory-stack-lite-demo/main/latest.json",
+  "zipUrl": "https://raw.githubusercontent.com/mushroom029/agent-memory-stack-lite-demo/main/agent-memory-stack-lite-demo-v0.2.18.zip",
+  "sha256": "6A010A34F1DD2159273C0953E2E558DB8DBDC0479F704D87EF400D0D3BF9C02C",
+  "sizeBytes": 262574,
   "activation": "启用外挂记忆",
   "explicitActivation": "本会话启用外挂记忆",
   "naturalActivation": "启动外挂记忆",
@@ -21,14 +21,9 @@
   },
   "notes": [
     "Memory-only Lite Demo package with one public skill.",
-    "v0.2.17 preserves Lite Demo governance, user boundaries, old-memory takeover, and lightweight local Markdown use while adding Lite-native storage/retrieval separation through owner routes and derived pointer cache.",
-    "Old users upgrade the skill program files safely; project memories are not deleted or migrated during install.",
-    "On first activation in an old project, Lite Demo asks once: inherit and reorganize old memory, or start fresh. Inheritance only edits memory files and does not resume old tasks or touch business files.",
-    "If inheritance is requested but no current project root exposes old memory, Codex first performs bounded candidate discovery and presents choices instead of asking ordinary users to locate docs/codex by hand; broader discovery remains opt-in.",
-    "session-log.md remains a sparse in-flight queue. Settled entries discharge byte-preserved, and recovery starts from compact routes and owners rather than default log injection.",
-    "Long local text sources are sliced into artifacts while memory owners keep interpretation, routes, and continuation guards.",
-    "Standalone context-memory-index copies are archived out of active skills with restore metadata; Lite Demo remains one public skill.",
-    "The on-disk memory schema/checkpoint compatibility label remains v0.2.7; package version text alone never proves takeover completion.",
+    "v0.2.18 adds pressure-boundary pre-check cards for resumed, corrective, high-pressure, stable-module, rejected-path, and delivery-blocked work.",
+    "The pre-check is memory-layer discipline, not a new engineering protocol or repeated confirmation system.",
+    "Run Audit now records Pressure pre-check: green | yellow | red | not-triggered.",
     "v0.1.7 remains available as the retained stable fallback."
   ]
 }

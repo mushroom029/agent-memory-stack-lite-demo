@@ -1,6 +1,6 @@
 ---
 name: agent-memory-stack-lite-demo
-description: Install, update, and operate a memory-only Codex demo stack with project-local current-context, layered current/history routes, capsules, sparse session logs, active-task anchors, a one-time fresh-start-vs-inherit choice on the first activation after upgrade before older project memory takeover, cross-conversation legacy-source import, explicit user-requirement preservation, and a one-time passive activation suggestion. Use when the user says "启用外挂记忆", "启动外挂记忆", "本会话启用外挂记忆", the legacy phrase "启动lite demo", asks to upgrade/update Lite Demo, opens an old Lite Demo project after upgrade, asks to inherit/reorganize old or damaged conversation memory into a current conversation, installs from a fresh-machine zip, sets up project docs/codex memory, preserves failed paths, routes parallel task memory, or proves compression/interruption recovery without external executors or extra credentials.
+description: Install, update, and operate a memory-only Codex demo stack with project-local current-context, layered current/history routes, capsules, sparse session logs, active-task anchors, pressure-boundary pre-check cards, a one-time fresh-start-vs-inherit choice on the first activation after upgrade before older project memory takeover, cross-conversation legacy-source import, explicit user-requirement preservation, and a one-time passive activation suggestion. Use when the user says "启用外挂记忆", "启动外挂记忆", "本会话启用外挂记忆", the legacy phrase "启动lite demo", asks to upgrade/update Lite Demo, opens an old Lite Demo project after upgrade, asks to inherit/reorganize old or damaged conversation memory into a current conversation, installs from a fresh-machine zip, sets up project docs/codex memory, preserves failed paths or pressure boundaries, routes parallel task memory, or proves compression/interruption recovery without external executors or extra credentials.
 ---
 
 # Agent Memory Stack Lite Demo
@@ -21,9 +21,11 @@ Help Codex keep the route of a real task visible:
 - how to import a user-named old conversation, old project, archive, or unknown
   legacy memory source before creating a blank current-session entry point.
 - how to ask once, on first activation against an incomplete old memory root,
-  whether the user wants a fresh 0.2.17 start or explicit old-memory inheritance.
+  whether the user wants a fresh current-version start or explicit old-memory inheritance.
 - which explicit user goals, prohibitions, acceptance criteria, and corrections
   must survive as requirements instead of being softened as pressure.
+- which pressure-derived boundaries, rejected paths, stable modules, and
+  completion blockers should be checked before risky execution.
 - which task memory the current conversation should read/write when unfinished
   or parallel work creates ambiguity.
 - whether the latest meaningful run had route, artifact, encoding, or memory-hygiene risk.
@@ -77,6 +79,9 @@ recovery workflow is bundled as internal references under this skill:
 - [references/legacy-destination-manifest.md](references/legacy-destination-manifest.md)
 - [references/legacy-source-import.md](references/legacy-source-import.md)
 - [references/user-requirement-ledger.md](references/user-requirement-ledger.md)
+- [references/pressure-boundary-precheck.md](references/pressure-boundary-precheck.md)
+- [references/historical-regression-suite.md](references/historical-regression-suite.md)
+- [references/historical-regression-subagent-runbook.md](references/historical-regression-subagent-runbook.md)
 
 Use the bundled memory workflow only through this skill.
 Do not expose internal references as extra GitHub install paths, activation
@@ -121,17 +126,27 @@ When the user uses any activation phrase, treat it as an activation command for 
    for explicit goals, prohibitions, acceptance criteria, and corrections.
    Then apply [references/memory-hygiene-nudge.md](references/memory-hygiene-nudge.md)
    only to the remaining ambiguous or weak notes.
-7. During work, use the internal memory workflow references when writing `docs/codex/`, and keep durable state there, not in global AGENTS.
-8. When the user points to a long local text source such as a novel,
+7. Before risky, resumed, corrective, pressure-heavy, protected-module, or
+   rejected-path-sensitive execution, apply
+   [references/pressure-boundary-precheck.md](references/pressure-boundary-precheck.md).
+   Keep it as an auditable memory-layer pre-check, not an extra engineering
+   workflow and not a repeated user confirmation ritual.
+8. During work, use the internal memory workflow references when writing `docs/codex/`, and keep durable state there, not in global AGENTS.
+9. When the user points to a long local text source such as a novel,
    transcript, exported chat, or notes file and asks Lite Demo to understand or
    convert part of it into memory, read
    [references/large-text-source-intake.md](references/large-text-source-intake.md)
    before reading long bodies. Use the bundled source-slice helper so source
    bodies stay in artifacts while memory owners store interpretation, routes,
    and continuation guards.
-9. When touching Chinese text, UTF-8 files, JSON, Markdown, YAML, TOML, or logs, apply [references/encoding-discipline.md](references/encoding-discipline.md).
-10. After a meaningful run, user correction, repeated failure, or smoke test, use [references/run-audit-and-upgrade.md](references/run-audit-and-upgrade.md).
-11. For validation, use [references/test-plan.md](references/test-plan.md).
+10. When touching Chinese text, UTF-8 files, JSON, Markdown, YAML, TOML, or logs, apply [references/encoding-discipline.md](references/encoding-discipline.md).
+11. After a meaningful run, user correction, repeated failure, or smoke test, use [references/run-audit-and-upgrade.md](references/run-audit-and-upgrade.md).
+12. For validation, use [references/test-plan.md](references/test-plan.md).
+    For release or upgrade regression against known historical failures, use
+    [references/historical-regression-suite.md](references/historical-regression-suite.md).
+    When model behavior needs replay evidence beyond script checks, use
+    [references/historical-regression-subagent-runbook.md](references/historical-regression-subagent-runbook.md)
+    to start a fresh subagent run and record PASS, PARTIAL, or FAIL artifacts.
     For a long session log, use the internal `scripts/read-session-log.py`
     helper or equivalent bounded tail/search/range reads; never read the full
     log by default. Use `scripts/route-memory.py` for layered owner resolution
@@ -151,8 +166,8 @@ When the user uses any activation phrase, treat it as an activation command for 
     the oldest whole entries byte-preserved into
     `legacy/session-log-archive.md`. Neither helper touches the checkpoint or
     the legacy prefix it protects, so takeover verification keeps passing.
-12. If the user asks who made this package, how to get updates, or how to contact the maker, read [references/author-and-source.md](references/author-and-source.md).
-13. If the user asks to update or upgrade Lite Demo through the official server, read [references/update-from-server.md](references/update-from-server.md) and use the bundled updater script.
+13. If the user asks who made this package, how to get updates, or how to contact the maker, read [references/author-and-source.md](references/author-and-source.md).
+14. If the user asks to update or upgrade Lite Demo through the official server, read [references/update-from-server.md](references/update-from-server.md) and use the bundled updater script.
 
 ## Boundary
 

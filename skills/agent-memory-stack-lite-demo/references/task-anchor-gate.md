@@ -10,6 +10,12 @@ If `ExecutionPolicy: lite-anchor`, the anchor is Lite Demo's adaptive fallback a
 
 If `ExecutionPolicy: unknown`, explicit sources conflict or required project rules are unreadable. Keep Lite Demo memory-only and ask one focused question before complex execution.
 
+If the task is risky, resumed, corrective, pressure-heavy, likely to touch a
+stable module, or likely to revive a rejected path, apply
+`pressure-boundary-precheck.md` before the first edit or state change. This
+adds a compact execution pre-check card; it does not add a second engineering
+flow.
+
 Before execution starts, create or update:
 
 ```text
@@ -39,6 +45,13 @@ The anchor must include:
 - forbidden changes;
 - validation gates;
 - rejected paths or failed approaches that should not be retried.
+
+When triggered by pressure, rejected paths, stable-touch risk, or completion
+blockers, also include:
+
+- Execution pre-check card: matched constraints, safe default action, forbidden
+  actions this turn, explain-before-action triggers, stop-and-ask conflicts,
+  completion blockers, prompt budget, and evidence owners.
 
 If the user requires named delivery artifacts, completion is gated by the
 artifacts themselves. Before setting `Status: complete` or `Next exact step:
@@ -77,6 +90,9 @@ Refresh the anchor:
 - before switching modules;
 - before pausing;
 - after any error that changes the route.
+
+When the execution pre-check card exists, refresh only its current risk fields.
+Do not append a new card after every tool call.
 
 ## 稳定模块保护门
 
